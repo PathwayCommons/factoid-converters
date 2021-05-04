@@ -204,5 +204,8 @@ public class TemplateModel {
 	public void setPatwayId(String id) {
 		model.setPatwayId(id);
 	}
-
+	
+	public BioPAXModel getBiopaxModel() {
+		return model;
+	}
 }

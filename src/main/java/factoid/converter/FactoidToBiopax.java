@@ -1,5 +1,7 @@
 package factoid.converter;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Reader;
 
 /*
@@ -19,6 +21,7 @@ import org.biopax.paxtools.model.level3.PhysicalEntity;
 import org.biopax.paxtools.model.level3.Protein;
 import org.biopax.paxtools.model.level3.Rna;
 import org.biopax.paxtools.model.level3.SmallMolecule;
+import org.codehaus.groovy.control.CompilationFailedException;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -28,6 +31,8 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
 import factoid.model.*;
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyObject;
 
 public class FactoidToBiopax {
 
@@ -107,6 +112,9 @@ public class FactoidToBiopax {
 				
 				addOtherInteraction(participantsJSON, controlTypeStr);
 			}
+			else if(matchesTemplateType(typeStr, TemplateType.CUSTOM_INTERACTION)) {
+				addCustomInteraction(template);
+			}
 		}
 		
 		if ( docTemplate.has("publication") ) {
@@ -161,6 +169,23 @@ public class FactoidToBiopax {
 	
 	private boolean isComplexOrMacromolecule(Class<? extends BioPAXElement> c) {
 		return c == Complex.class || isMacromolecule(c);
+	}
+	
+	private void addCustomInteraction(JsonObject template) {
+		Map<String, Object> props = new HashMap<String, Object>();
+		props.put("template", template);
+		props.put("model", new CustomizableModel(model.getBiopaxModel()));
+		
+		String scriptPath = template.get("scriptPath").getAsString();
+		GroovyClassLoader classLoader = new GroovyClassLoader();
+		Class groovy;
+		try {
+			groovy = classLoader.parseClass(new File(scriptPath));
+			GroovyObject groovyObj = (GroovyObject) groovy.newInstance();
+	        groovyObj.invokeMethod("addIntn", props);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
 	}
 	
 	private void addOtherInteraction(JsonArray participantsJSON, String controlTypeStr) {		
@@ -224,7 +249,8 @@ public class FactoidToBiopax {
 		EXPRESSION_REGULATION("Expression Regulation"),
 		MOLECULAR_INTERACTION("Molecular Interaction"),
 		PROTEIN_CONTROLS_STATE("Protein Controls State"),
-		OTHER_INTERACTION("Other Interaction");
+		OTHER_INTERACTION("Other Interaction"),
+		CUSTOM_INTERACTION("Custom Interaction");
 			
 		private String name;
 		

@@ -260,6 +260,10 @@ public class BioPAXModel {
 		
 		return org;
 	}
+	
+	public <T extends Interaction> T addNewInteraction(Class<T> c) {
+		return addNew(c);
+	}
 
 	// Create a new conversion by given properties
 	public <T extends Conversion> T addNewConversion(Class<T> c, PhysicalEntity left, PhysicalEntity right, ConversionDirectionType dir) {

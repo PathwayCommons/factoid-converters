@@ -1,6 +1,10 @@
 {
 	"interactions": [
 		{
+			"type": "Custom Interaction",
+			"scriptPath": "/Users/siperm/Documents/Workspace/factoid-converters/src/test/resources/GroovyIntn.groovy"
+		},
+		{
 			"type": "Other Interaction",
 			"controlType": "activation",
 			"participants": [

@@ -28,6 +28,7 @@ repositories {
 }
 
 dependencies {
+	implementation 'org.codehaus.groovy:groovy-all:3.0.8'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     runtimeOnly 'org.springframework.boot:spring-boot-devtools'
