@@ -2,7 +2,25 @@
 	"interactions": [
 		{
 			"type": "Custom Interaction",
-			"scriptPath": "/Users/siperm/Documents/Workspace/factoid-converters/src/test/resources/GroovyIntn.groovy"
+			"scriptPath": "/Users/siperm/Documents/Workspace/factoid-converters/src/test/resources/GroovyIntn.groovy",
+			"participants": [
+				{
+					"type": "protein",
+					"name": "BMP2",
+					"xref": {
+						"id": "P12643",
+						"db": "uniprot"
+					}
+				},
+				{
+					"type": "chemical",
+					"name": "Estradiol",
+					"xref": {
+						"id": 9811784,
+						"db": "pubchem"
+					}
+				}
+			]
 		},
 		{
 			"type": "Other Interaction",

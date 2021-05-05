@@ -18,6 +18,10 @@ public class CustomizableModel {
 		return model.getOrCreatePhysicalEntity(c, name, entityRef, modificationTypes, modificationNotTypes, inComplex, componentModels);
 	}
 	
+	public <T extends EntityReference> T getOrCreateEntityReference(Class<T> c, String name, XrefModel xrefModel, XrefModel organismModel) {
+		return model.getOrCreateEntityReference(c, name, xrefModel, organismModel);
+	}
+	
 	public <T extends Interaction> T addNewInteraction(Class<T> c) {
 		return model.addNewInteraction(c);
 	}
