@@ -176,7 +176,18 @@ public class FactoidToBiopax {
 		props.put("template", template);
 		props.put("model", new CustomizableModel(model.getBiopaxModel()));
 		
-		String scriptPath = template.get("scriptPath").getAsString();
+		String scriptPath;
+		JsonElement scriptPathEl = template.get("scriptPath");
+		
+		if ( scriptPathEl != null ) {
+			scriptPath = scriptPathEl.getAsString();
+		}
+		else {
+			JsonElement scriptRelPathEl = template.get("scriptRelPath");
+			String scriptRelPath = scriptRelPathEl.getAsString();
+			String projectPath = System.getProperty("user.dir");
+			scriptPath = projectPath + "/" + scriptRelPath;
+		}
 		GroovyClassLoader classLoader = new GroovyClassLoader();
 		Class groovy;
 		try {

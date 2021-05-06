@@ -618,7 +618,7 @@ public class FactoidToBiopaxTest {
 	  String templates = "[" +
 	  		  "{\n" +
 		      "    \"type\": \"Custom Interaction\",\n" +
-		      "    \"scriptPath\": \"/Users/siperm/Documents/Workspace/factoid-converters/src/test/resources/GroovyIntn.groovy\",\n" +
+		      "    \"scriptRelPath\": \"src/test/resources/GroovyIntn.groovy\",\n" +
 		      "    \"participants\": [\n" +
 		      "      {\n" +
 		      "        \"type\": \"complex\",\n" +
@@ -647,7 +647,7 @@ public class FactoidToBiopaxTest {
 		      "  }," +
 		      "  {\n" +
 		      "    \"type\": \"Custom Interaction\",\n" +
-		      "    \"scriptPath\": \"/Users/siperm/Documents/Workspace/factoid-converters/src/test/resources/GroovyIntn.groovy\",\n" +
+		      "    \"scriptRelPath\": \"src/test/resources/GroovyIntn.groovy\",\n" +
 		      "    \"participants\": [\n" +
 		      "      {\n" +
 		      "        \"type\": \"complex\",\n" +
