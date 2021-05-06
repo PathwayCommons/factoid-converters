@@ -5,7 +5,11 @@ class GroovyIntn {
     		factoid.util.GsonUtil gsonUtil = new factoid.util.GsonUtil()
     		
     		com.google.gson.JsonArray ppts = template.get("participants").getAsJsonArray()
-    		java.util.List<factoid.model.EntityModel> pptModels = gsonUtil.enityModelsFromJsonArray(ppts)
-        print "Hello Groovy World\t" + pptModels[0].getName() + "\t" + pptModels[1].getName()
+    		com.google.gson.JsonObject ppt = ppts[0]
+    		
+    		java.lang.String name = ppt.get("name")
+    		java.util.List<factoid.model.EntityModel> componentModels = gsonUtil.enityModelsFromJsonArray(ppt.get("components").getAsJsonArray())
+    		
+    		model.getOrCreatePhysicalEntity(org.biopax.paxtools.model.level3.Complex.class, name, null, false, componentModels)
     }
 }

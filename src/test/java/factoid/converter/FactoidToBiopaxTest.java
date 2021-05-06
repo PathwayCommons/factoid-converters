@@ -614,6 +614,74 @@ public class FactoidToBiopaxTest {
   }
   
   @Test
+  public void testCustomIntns() throws IOException {
+	  String templates = "[" +
+	  		  "{\n" +
+		      "    \"type\": \"Custom Interaction\",\n" +
+		      "    \"scriptPath\": \"/Users/siperm/Documents/Workspace/factoid-converters/src/test/resources/GroovyIntn.groovy\",\n" +
+		      "    \"participants\": [\n" +
+		      "      {\n" +
+		      "        \"type\": \"complex\",\n" +
+		      "        \"name\": \"complex\",\n" +
+		      "        \"xref\": null,\n" +
+		      "        \"components\": [\n" +
+		      "      					{\n" +
+		      "        						\"type\": \"protein\",\n" +
+		      "        						\"name\": \"LEP\",\n" +
+		      "        						\"xref\": {\n" +
+		      "          						\"id\": \"P41159\",\n" +
+		      "      							\"db\": \"uniprot\"\n" +
+		      "        						}\n" +
+		      "                          \n}," +	
+		      "      					{\n" +
+		      "        						\"type\": \"protein\",\n" +
+		      "        						\"name\": \"Saccharopepsin\",\n" +
+		      "        						\"xref\": {\n" +
+		      "          						\"id\": \"P07267\",\n" +
+		      "      							\"db\": \"uniprot\"\n" +
+		      "        						}\n" +
+		      "                          \n}" +			
+		      "                        ]\n" +
+		      "      },\n" +
+		      "    ]\n" +
+		      "  }," +
+		      "  {\n" +
+		      "    \"type\": \"Custom Interaction\",\n" +
+		      "    \"scriptPath\": \"/Users/siperm/Documents/Workspace/factoid-converters/src/test/resources/GroovyIntn.groovy\",\n" +
+		      "    \"participants\": [\n" +
+		      "      {\n" +
+		      "        \"type\": \"complex\",\n" +
+		      "        \"name\": \"complex\",\n" +
+		      "        \"xref\": null,\n" +
+		      "        \"components\": [\n" +
+		      "      					{\n" +
+		      "        						\"type\": \"protein\",\n" +
+		      "        						\"name\": \"LEP\",\n" +
+		      "        						\"xref\": {\n" +
+		      "          						\"id\": \"P41159\",\n" +
+		      "      							\"db\": \"uniprot\"\n" +
+		      "        						}\n" +
+		      "                          \n}," +	
+		      "      					{\n" +
+		      "        						\"type\": \"protein\",\n" +
+		      "        						\"name\": \"Saccharopepsin\",\n" +
+		      "        						\"xref\": {\n" +
+		      "          						\"id\": \"P07267\",\n" +
+		      "      							\"db\": \"uniprot\"\n" +
+		      "        						}\n" +
+		      "                          \n}" +			
+		      "                        ]\n" +
+		      "      },\n" +
+		      "    ]\n" +
+		      "  }" +
+		      "]";
+	    FactoidToBiopax converter = getBiopaxConvertor(templates, null);
+	
+	    Model m = converterResultToModel(converter.convertToBiopax());
+	    assertThat(m.getObjects(Complex.class).size(), equalTo(1));
+  }
+  
+  @Test
   public void testComplexes() throws IOException {
 	  String templates = "[" +
 	  		  "{\n" +
