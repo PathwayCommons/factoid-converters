@@ -3,7 +3,6 @@ package factoid.model;
 import java.util.List;
 import java.util.Set;
 
-import org.biopax.paxtools.model.Model;
 import org.biopax.paxtools.model.level3.EntityReference;
 import org.biopax.paxtools.model.level3.Interaction;
 import org.biopax.paxtools.model.level3.PhysicalEntity;
@@ -49,5 +48,17 @@ public class CustomizableModel {
 	
 	public <T extends PhysicalEntity> T getOrCreatePhysicalEntity(Class<T> c) {
 		return getOrCreatePhysicalEntity(c, null);
+	}
+	
+	public String validate() {
+		return model.validate();
+	}
+	
+	public <T extends PhysicalEntity> T physicalEntityFromModel(EntityModel entityModel) {
+		return model.physicalEntityFromModel(entityModel);
+	}
+	
+	public <T extends PhysicalEntity> T physicalEntityFromModel(EntityModel entityModel, Set<String> modificationTypes, Set<String> modificationNotTypes) {
+		return model.physicalEntityFromModel(entityModel, modificationTypes, modificationNotTypes);
 	}
 }

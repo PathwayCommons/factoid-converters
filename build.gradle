@@ -38,6 +38,7 @@ dependencies {
     implementation 'org.apache.commons:commons-collections4:4.1'
     implementation 'io.springfox:springfox-swagger2:2.7.0'
     implementation 'io.springfox:springfox-swagger-ui:2.7.0'
+    implementation 'org.biopax.validator:biopax-validator-client:4.0.0'
 
     //java 9+ does not have Jax B Dependents
     implementation 'javax.xml.bind:jaxb-api:2.3.0'

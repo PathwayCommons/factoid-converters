@@ -151,6 +151,10 @@ public class FactoidToBiopax {
 		return model.convertToOwl();
 	}
 	
+	public String validate() {
+		return model.validate();
+	}
+	
 	private static String getTemplateName(TemplateType templateType) {
 		return templateType.getName();
 	}

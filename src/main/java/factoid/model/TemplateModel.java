@@ -132,28 +132,18 @@ public class TemplateModel {
 		return model.convertToOwl();
 	}
 	
+	public String validate() {
+		return model.validate();
+	}
+	
 	// Section: private helper methods
 	
 	private <T extends PhysicalEntity> T physicalEntityFromModel(EntityModel entityModel) {
-		return physicalEntityFromModel(entityModel, null, null);
+		return model.physicalEntityFromModel(entityModel);
 	}
 	
 	private <T extends PhysicalEntity> T physicalEntityFromModel(EntityModel entityModel, Set<String> modificationTypes, Set<String> modificationNotTypes) {
-		String name = entityModel.getName();
-		XrefModel xref = entityModel.getXref();
-		XrefModel org = entityModel.getOrganism();
-		
-		
-		List<EntityModel> componentModels = entityModel.getComponentModels();
-		boolean inComplex = false;
-		
-		Class<? extends EntityReference> entityRefClass = entityModel.getEntityRefClass();
-		Class<? extends PhysicalEntity> entityClass = entityModel.getEntityClass();
-		EntityReference entityRef = model.getOrCreateEntityReference(entityRefClass, name, xref, org);
-		
-		T entity = (T) model.getOrCreatePhysicalEntity(entityClass, name, entityRef, modificationTypes, modificationNotTypes, inComplex, componentModels);
-		
-		return entity;
+		return model.physicalEntityFromModel(entityModel, modificationTypes, modificationNotTypes);
 	}
 	
 	private <T extends Interaction> void addInteractionWithParticipants(Class<T> c, List<EntityModel> participantModels) {

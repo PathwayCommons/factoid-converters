@@ -5,6 +5,10 @@
 
 package factoid.model;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,7 +26,6 @@ import org.biopax.paxtools.model.BioPAXElement;
 import org.biopax.paxtools.model.BioPAXFactory;
 import org.biopax.paxtools.model.BioPAXLevel;
 import org.biopax.paxtools.model.Model;
-import org.biopax.paxtools.model.level2.pathwayComponent;
 import org.biopax.paxtools.model.level3.BioSource;
 import org.biopax.paxtools.model.level3.Complex;
 import org.biopax.paxtools.model.level3.Control;
@@ -49,6 +52,8 @@ import org.biopax.paxtools.model.level3.SimplePhysicalEntity;
 import org.biopax.paxtools.model.level3.SmallMoleculeReference;
 import org.biopax.paxtools.model.level3.UnificationXref;
 import org.biopax.paxtools.model.level3.Xref;
+import org.biopax.validator.BiopaxValidatorClient;
+import org.biopax.validator.BiopaxValidatorClient.RetFormat;
 
 public class BioPAXModel {
 	
@@ -87,6 +92,30 @@ public class BioPAXModel {
 
 	// Section: public methods
 	
+	public String validate() {
+		BiopaxValidatorClient validatorClient = new BiopaxValidatorClient();
+		try {
+			File tempFile = File.createTempFile("factoid-converters-validation", "");
+			tempFile.deleteOnExit();
+			
+			FileWriter writer = new FileWriter(tempFile);
+			String content = convertToOwl();
+			writer.write(content);
+			writer.close();
+			
+			File[] files = new File[] { tempFile };
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			validatorClient.validate(false, null, RetFormat.XML, null, null, null, files, baos);
+			
+			String res = new String(baos.toByteArray(), "UTF-8");
+			return res;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 	// add a new element to model with given id
 	public <T extends BioPAXElement> T addNew(Class<T> c, String id, boolean omitPathwayComponent) {
 		T el = model.addNew(c, id);
@@ -109,6 +138,28 @@ public class BioPAXModel {
 	// interaction or a subclass of interaction
 	public <T extends BioPAXElement> T addNew(Class<T> c, boolean omitPathwayComponent) {
 		return addNew(c, generateUUID(), omitPathwayComponent);
+	}
+	
+	public <T extends PhysicalEntity> T physicalEntityFromModel(EntityModel entityModel) {
+		return physicalEntityFromModel(entityModel, null, null);
+	}
+	
+	public <T extends PhysicalEntity> T physicalEntityFromModel(EntityModel entityModel, Set<String> modificationTypes, Set<String> modificationNotTypes) {
+		String name = entityModel.getName();
+		XrefModel xref = entityModel.getXref();
+		XrefModel org = entityModel.getOrganism();
+		
+		
+		List<EntityModel> componentModels = entityModel.getComponentModels();
+		boolean inComplex = false;
+		
+		Class<? extends EntityReference> entityRefClass = entityModel.getEntityRefClass();
+		Class<? extends PhysicalEntity> entityClass = entityModel.getEntityClass();
+		EntityReference entityRef = getOrCreateEntityReference(entityRefClass, name, xref, org);
+		
+		T entity = (T) getOrCreatePhysicalEntity(entityClass, name, entityRef, modificationTypes, modificationNotTypes, inComplex, componentModels);
+		
+		return entity;
 	}
 	
 	// Just get a physical entity, create it if not available yet.
