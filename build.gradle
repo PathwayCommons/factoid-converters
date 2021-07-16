@@ -52,6 +52,10 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
 }
 
+artifacts {
+    archives sourcesJar
+}
+
 sourceCompatibility = 1.8
 group = 'pathwaycommons'
 version =  '0.3.0'
