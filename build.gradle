@@ -16,6 +16,7 @@ apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'maven'
 
 repositories {
     mavenCentral()
@@ -45,6 +46,15 @@ dependencies {
     implementation 'com.sun.xml.bind:jaxb-core:2.3.0'
     implementation 'com.sun.xml.bind:jaxb-impl:2.3.0'
     implementation 'javax.activation:activation:1.1.1'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
 }
 
 sourceCompatibility = 1.8
