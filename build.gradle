@@ -12,14 +12,18 @@ buildscript {
     }
 }
 
-apply plugin: 'idea'
-apply plugin: 'java'
+apply plugin: 'java-library'
+apply plugin: 'maven-publish'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'maven'
+
+group = 'pathwaycommons'
+
+sourceCompatibility = 1.8 // java 8
+targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    jcenter()
     maven {
         url "https://oss.sonatype.org/content/groups/public/"
     }
@@ -28,17 +32,33 @@ repositories {
     }
 }
 
+sourceSets {
+    main {
+        java {
+            exclude 'factoid/web/**'
+       }
+   }
+}
+
+task printSourceSetInformation(){
+    doLast{
+        sourceSets.each { srcSet ->
+            println "["+srcSet.name+"]"
+            print "-->Source directories: "+srcSet.allJava.srcDirs+"\n"
+            print "-->Output directories: "+srcSet.output.classesDirs.files+"\n"
+            println ""
+        }
+    }
+}
+
+
+
 dependencies {
+	implementation 'com.google.guava:guava:29.0-jre'
 	implementation 'org.codehaus.groovy:groovy-all:3.0.8'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    runtimeOnly 'org.springframework.boot:spring-boot-devtools'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.biopax.paxtools:sbgn-converter:5.2.1-SNAPSHOT'
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'org.apache.commons:commons-collections4:4.1'
-    implementation 'io.springfox:springfox-swagger2:2.7.0'
-    implementation 'io.springfox:springfox-swagger-ui:2.7.0'
     implementation 'org.biopax.validator:biopax-validator-client:4.0.0'
 
     //java 9+ does not have Jax B Dependents
@@ -49,14 +69,21 @@ dependencies {
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
+    from sourceSets.main.allJava
     
-    from sourceSets.main.allSource
 }
 
-artifacts {
-    archives sourcesJar
+
+publishing {
+      publications {
+          mavenAar(MavenPublication) {
+                from components.java
+                afterEvaluate {
+                    artifact sourcesJar
+                }
+          }
+     }
 }
 
-sourceCompatibility = 1.8
 group = 'pathwaycommons'
 version =  '0.3.0'
