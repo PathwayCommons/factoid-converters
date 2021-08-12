@@ -1,0 +1,52 @@
+buildscript {
+    ext {
+        springBootVersion = '2.2.6.RELEASE'
+    }
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    }
+}
+
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://oss.sonatype.org/content/groups/public/"
+    }
+    maven {
+        url "https://www.biopax.org/m2repo/releases/"
+    }
+}
+
+dependencies {
+	implementation 'org.codehaus.groovy:groovy-all:3.0.8'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.biopax.paxtools:sbgn-converter:5.2.1-SNAPSHOT'
+    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'org.apache.commons:commons-collections4:4.1'
+    implementation 'io.springfox:springfox-swagger2:2.7.0'
+    implementation 'io.springfox:springfox-swagger-ui:2.7.0'
+    implementation 'org.biopax.validator:biopax-validator-client:4.0.0'
+
+    //java 9+ does not have Jax B Dependents
+    implementation 'javax.xml.bind:jaxb-api:2.3.0'
+    implementation 'com.sun.xml.bind:jaxb-core:2.3.0'
+    implementation 'com.sun.xml.bind:jaxb-impl:2.3.0'
+    implementation 'javax.activation:activation:1.1.1'
+}
+
+sourceCompatibility = 1.8
+group = 'pathwaycommons'
+version =  '0.3.0'
