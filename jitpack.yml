@@ -1,0 +1,3 @@
+install:
+   - echo "Running build-api.gradle file"
+   - ./gradlew clean build publishToMavenLocal -b build-api.gradle
