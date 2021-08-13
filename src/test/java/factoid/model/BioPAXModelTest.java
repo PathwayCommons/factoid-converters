@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.biopax.paxtools.model.Model;
+import org.biopax.paxtools.model.level3.CellularLocationVocabulary;
 import org.biopax.paxtools.model.level3.Control;
 import org.biopax.paxtools.model.level3.ControlType;
 import org.biopax.paxtools.model.level3.Conversion;
@@ -86,26 +87,26 @@ public class BioPAXModelTest {
 	}
 	
 //	@Test
-//	public void addCellularLocationVocabularyTest() {
-//		
-//		BioPAXModel model = new BioPAXModel();
-//		
-//		// Underlying PAXTools model
-//		Model innerModel = model.getPaxtoolsModel();
-//		
-//		String commonLocationName = "location1";
-//		String uniqueLocationName = "location2";
-//		
-//		CellularLocationVocabulary clv1 = model.getOrCreateCellularLocationVocabulary(commonLocationName);
-//		assertTrue("Cellular location vocabulary is added to the model", innerModel.contains(clv1));
-//		assertEquals("Cellular location vocabulary has the name", 1, clv1.getTerm().size());
-//		
-//		CellularLocationVocabulary clv2 = model.getOrCreateCellularLocationVocabulary(commonLocationName);
-//		assertEquals("No duplication in adding the second cellular location with the same name", clv1, clv2);
-//		
-//		CellularLocationVocabulary clv3 = model.getOrCreateCellularLocationVocabulary(uniqueLocationName);
-//		assertNotEquals("A new cellular location is added with a new name", clv1, clv3);
-//	}
+	public void addCellularLocationVocabularyTest() {
+		
+		BioPAXModel model = new BioPAXModel();
+		
+		// Underlying PAXTools model
+		Model innerModel = model.getPaxtoolsModel();
+		
+		String commonLocationName = "location1";
+		String uniqueLocationName = "location2";
+		
+		CellularLocationVocabulary clv1 = model.getOrCreateCellularLocationVocabulary(commonLocationName);
+		assertTrue("Cellular location vocabulary is added to the model", innerModel.contains(clv1));
+		assertEquals("Cellular location vocabulary has the name", 1, clv1.getTerm().size());
+		
+		CellularLocationVocabulary clv2 = model.getOrCreateCellularLocationVocabulary(commonLocationName);
+		assertEquals("No duplication in adding the second cellular location with the same name", clv1, clv2);
+		
+		CellularLocationVocabulary clv3 = model.getOrCreateCellularLocationVocabulary(uniqueLocationName);
+		assertNotEquals("A new cellular location is added with a new name", clv1, clv3);
+	}
 	
 	@Test
 	public void addConversionTest() {

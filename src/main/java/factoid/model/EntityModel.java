@@ -14,7 +14,7 @@ import org.biopax.paxtools.model.level3.RnaReference;
 import org.biopax.paxtools.model.level3.SmallMolecule;
 import org.biopax.paxtools.model.level3.SmallMoleculeReference;
 
-
+// TODO: decide if cellular location and other modification, modification not features must be added to here
 public class EntityModel {
 	
 	private String name;
@@ -22,13 +22,21 @@ public class EntityModel {
 	private String type;
 	private List<EntityModel> components;
 	private XrefModel organism;
+	private String cellularLocation;
 	
-	public EntityModel(String name, XrefModel xref, String type, XrefModel organism, List<EntityModel> components) {
+	public EntityModel(String name, XrefModel xref, String type, XrefModel organism, List<EntityModel> components, String cellularLocation) {
 		this.name = name;
 		this.xref = xref;
 		this.type = type;
 		this.components = components;
 		this.organism = organism;
+		this.cellularLocation = cellularLocation;
+		
+		System.out.println(cellularLocation);
+	}
+	
+	public EntityModel(String name, XrefModel xref, String type, XrefModel organism, List<EntityModel> components) {
+		this(name, xref, type, organism, components, null);
 	}
 	
 	public EntityModel(String name, XrefModel xref, String type) {
@@ -55,6 +63,10 @@ public class EntityModel {
 		this.type = type;
 	}
 	
+	public void setCellularLocation(String cellularLocation) {
+		this.cellularLocation = cellularLocation;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -65,6 +77,10 @@ public class EntityModel {
 	
 	public String getType() {
 		return type;
+	}
+	
+	public String getCellularLocation() {
+		return cellularLocation;
 	}
 	
 	public XrefModel getOrganism() {
