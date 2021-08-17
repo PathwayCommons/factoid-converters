@@ -627,6 +627,42 @@ public class FactoidToBiopaxTest {
 		      "        \"components\": [\n" +
 		      "      					{\n" +
 		      "        						\"type\": \"protein\",\n" +
+			  "							     \"cellularLocation\": {\n" +
+			  "										\"term\": \"inner kinetochore of condensed chromosome\",\n" +
+			  "										\"xref\": {\n" +
+			  "											\"id\": \"GO:0000939\",\n" +
+			  "											\"db\": \"gene ontology\"\n" +
+			  "										}\n" +
+			  "									},\n" +
+		      "        						\"name\": \"LEP\",\n" +
+		      "        						\"xref\": {\n" +
+		      "          						\"id\": \"P41159\",\n" +
+		      "      							\"db\": \"uniprot\"\n" +
+		      "        						}\n" +
+		      "                          \n}," +	
+		      "      					{\n" +
+		      "        						\"type\": \"protein\",\n" +
+		      "        						\"name\": \"Saccharopepsin\",\n" +
+		      "        						\"xref\": {\n" +
+		      "          						\"id\": \"P07267\",\n" +
+		      "      							\"db\": \"uniprot\"\n" +
+		      "        						}\n" +
+		      "                          \n}" +			
+		      "                        ]\n" +
+		      "      },\n" +
+		      "    ]\n" +
+		      "  }," +
+		      "  {\n" +
+		      "    \"type\": \"Custom Interaction\",\n" +
+		      "    \"scriptRelPath\": \"src/test/resources/GroovyIntn.groovy\",\n" +
+		      "    \"participants\": [\n" +
+		      "      {\n" +
+		      "        \"type\": \"complex\",\n" +
+		      "        \"name\": \"complex\",\n" +
+		      "        \"xref\": null,\n" +
+		      "        \"components\": [\n" +
+		      "      					{\n" +
+		      "        						\"type\": \"protein\",\n" +
 		      "        						\"name\": \"LEP\",\n" +
 		      "        						\"xref\": {\n" +
 		      "          						\"id\": \"P41159\",\n" +
@@ -678,7 +714,8 @@ public class FactoidToBiopaxTest {
 	    FactoidToBiopax converter = getBiopaxConvertor(templates, null);
 	
 	    Model m = converterResultToModel(converter.convertToBiopax());
-	    assertThat(m.getObjects(Complex.class).size(), equalTo(1));
+	    assertThat(m.getObjects(Complex.class).size(), equalTo(2));
+	    assertThat(m.getObjects(CellularLocationVocabulary.class).size(), equalTo(1));
   }
   
   @Test

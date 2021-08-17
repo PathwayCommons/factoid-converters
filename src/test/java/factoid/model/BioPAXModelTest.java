@@ -97,14 +97,16 @@ public class BioPAXModelTest {
 		String commonLocationName = "location1";
 		String uniqueLocationName = "location2";
 		
-		CellularLocationVocabulary clv1 = model.getOrCreateCellularLocationVocabulary(commonLocationName);
+		XrefModel xrefModel = new XrefModel("testId", "testDb");
+		
+		CellularLocationVocabulary clv1 = model.getOrCreateCellularLocationVocabulary(commonLocationName, xrefModel);
 		assertTrue("Cellular location vocabulary is added to the model", innerModel.contains(clv1));
 		assertEquals("Cellular location vocabulary has the name", 1, clv1.getTerm().size());
 		
-		CellularLocationVocabulary clv2 = model.getOrCreateCellularLocationVocabulary(commonLocationName);
+		CellularLocationVocabulary clv2 = model.getOrCreateCellularLocationVocabulary(commonLocationName, xrefModel);
 		assertEquals("No duplication in adding the second cellular location with the same name", clv1, clv2);
 		
-		CellularLocationVocabulary clv3 = model.getOrCreateCellularLocationVocabulary(uniqueLocationName);
+		CellularLocationVocabulary clv3 = model.getOrCreateCellularLocationVocabulary(uniqueLocationName, xrefModel);
 		assertNotEquals("A new cellular location is added with a new name", clv1, clv3);
 	}
 	

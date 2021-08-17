@@ -61,10 +61,15 @@ public class BioPAXModel {
 	// Underlying paxtools model
 	private Model model;
 	private Pathway pathway;
-	// Map of term to cellular location
-	private Map<String, CellularLocationVocabulary> cellularLocationMap;
-	// Map of xref id to xref itself
+	// Map of term, xrefId to cellular location
+	private MultiKeyMap<Object, CellularLocationVocabulary> cellularLocationMap;
+	// TODO: for entity xrefs and cellular location xref double check if deciding to reuse based on just the xrefId
+	// is enough (meaning if the xrefDb must also be used in that check). That may affect the keys in cellularLocationMap
+	// as well.
+	// Map of entity xref id to xref itself
 	private Map<String, RelationshipXref> xrefMap;
+	// Map of cellular location xref id to xref itself
+	private Map<String, UnificationXref> cellularLocationXrefMap;
 	private Map<String, BioSource> organismMap;
 	// Multiple key map of entity reference class and name to entity reference itself
 	private MultiKeyMap<Object, EntityReference> entityReferenceMap;
@@ -79,8 +84,9 @@ public class BioPAXModel {
 		
 		pathway = addNew(Pathway.class);
 		
-		cellularLocationMap = new HashMap<String, CellularLocationVocabulary>();
+		cellularLocationMap = new MultiKeyMap<Object, CellularLocationVocabulary>();
 		xrefMap = new HashMap<String, RelationshipXref>();
+		cellularLocationXrefMap = new HashMap<String, UnificationXref>();
 		organismMap = new HashMap<String, BioSource>();
 		entityReferenceMap = new MultiKeyMap<Object, EntityReference>();
 		noRefPhysicalEntityMap = new MultiKeyMap<Object, Set<PhysicalEntity>>();
@@ -146,21 +152,25 @@ public class BioPAXModel {
 	}
 	
 	public <T extends PhysicalEntity> T physicalEntityFromModel(EntityModel entityModel, Set<String> modificationTypes, Set<String> modificationNotTypes) {
+		boolean inComplex = false;
+		return physicalEntityFromModel(entityModel, modificationTypes, modificationNotTypes, inComplex);
+	}
+	
+	public <T extends PhysicalEntity> T physicalEntityFromModel(EntityModel entityModel, Set<String> modificationTypes, Set<String> modificationNotTypes, boolean inComplex) {
 		String name = entityModel.getName();
 		XrefModel xref = entityModel.getXref();
 		XrefModel org = entityModel.getOrganism();
 		
-		
 		List<EntityModel> componentModels = entityModel.getComponentModels();
-		boolean inComplex = false;
+		
 		
 		Class<? extends EntityReference> entityRefClass = entityModel.getEntityRefClass();
 		Class<? extends PhysicalEntity> entityClass = entityModel.getEntityClass();
 		EntityReference entityRef = getOrCreateEntityReference(entityRefClass, name, xref, org);
-		String cellularLocationTerm = entityModel.getCellularLocation();
+		CellularLocationModel cellularLocationModel = entityModel.getCellularLocation();
 		CellularLocationVocabulary cellularLocation = null;
-		if ( cellularLocationTerm != null ) {
-			cellularLocation = getOrCreateCellularLocationVocabulary(cellularLocationTerm);
+		if ( cellularLocationModel != null ) {
+			cellularLocation = getOrCreateCellularLocationVocabulary(cellularLocationModel.getTerm(), cellularLocationModel.getXref());
 		}
 		
 		T entity = (T) getOrCreatePhysicalEntity(entityClass, name, entityRef, modificationTypes, modificationNotTypes, inComplex, componentModels, cellularLocation);
@@ -240,15 +250,40 @@ public class BioPAXModel {
 		return xref;
 	}
 	
-	// Get cellular location matching the given term, create one if not available
-	public CellularLocationVocabulary getOrCreateCellularLocationVocabulary(String term) {
+	public UnificationXref getOrCreateCellularLocationXref(XrefModel xrefModel) {
 		
-		CellularLocationVocabulary clv = cellularLocationMap.get(term);
+		if (xrefModel == null) {
+			return null;
+		}
+		
+		String xrefId = xrefModel.getId();
+		UnificationXref xref = cellularLocationXrefMap.get(xrefId);
+		
+		if (xref == null) {
+			xref = addNew(UnificationXref.class);
+			xref.setId(xrefId);
+			xref.setDb(xrefModel.getDb());
+			cellularLocationXrefMap.put(xrefId, xref);
+		}
+		
+		return xref;
+	}
+	
+	// Get cellular location matching the given term, create one if not available
+	public CellularLocationVocabulary getOrCreateCellularLocationVocabulary(String term, XrefModel xrefModel) {
+		String xrefId = xrefModel.getId();
+		CellularLocationVocabulary clv = cellularLocationMap.get(term, xrefId);
 		
 		// if a clv does not exists for the term create one here and put it to the map
 		if(clv == null) {
 			clv = addNewControlledVocabulary(CellularLocationVocabulary.class, term);
-			cellularLocationMap.put(term, clv);
+			
+			if ( xrefModel != null ) {
+				UnificationXref xref = getOrCreateCellularLocationXref(xrefModel);
+				clv.addXref(xref);
+			}
+			
+			cellularLocationMap.put(term, xrefId, clv);
 		}
 		
 		return clv;
@@ -416,12 +451,22 @@ public class BioPAXModel {
 				xrefId = xref.getId();
 				xrefDb = xref.getDb();
 			}
-			return m.getName() + seperator + xrefId + seperator + xrefDb;
+			CellularLocationModel cellularLocation = m.getCellularLocation();
+			String cellularLocationStr = null;
+			
+			if ( cellularLocation != null ) {
+				String term = cellularLocation.getTerm();
+				XrefModel cellularLocXref = cellularLocation.getXref();
+				cellularLocationStr = term + seperator + cellularLocXref.getId() + seperator + cellularLocXref.getDb();
+			}
+			
+			return m.getName() + seperator + xrefId + seperator + xrefDb + seperator + cellularLocationStr;
 		}).collect(Collectors.toSet());
 		
 		Set<String> entitiesSummary = components.stream().map(c -> {
 			String xrefId = null;
 			String xrefDb = null;
+			String cellularLocationStr = null;
 			
 			if ( isSimplePhysicalEntityOrSubclass(c.getClass()) ) {
 				Iterator<Xref> it = ((SimplePhysicalEntity)c).getEntityReference().getXref().iterator();
@@ -433,7 +478,15 @@ public class BioPAXModel {
 				}
 			}
 			
-			return c.getName().iterator().next() + seperator + xrefId + seperator + xrefDb;
+			CellularLocationVocabulary cellularLocation = c.getCellularLocation();
+			
+			if ( cellularLocation != null ) {
+				Xref cellularLocXref = getOnlyElement(cellularLocation.getXref());
+				String term = getOnlyElement(cellularLocation.getTerm());
+				cellularLocationStr = term + seperator + cellularLocXref.getId() + seperator + cellularLocXref.getDb();
+			}
+			
+			return c.getName().iterator().next() + seperator + xrefId + seperator + xrefDb + seperator + cellularLocationStr;
 		}).collect(Collectors.toSet());
 		
 		return modelSummary.equals(entitiesSummary);
@@ -607,8 +660,11 @@ public class BioPAXModel {
 			for(EntityModel model : componentModels) {
 				String cName = model.getName();
 				boolean inComplex = true;
-				EntityReference cRef = getOrCreateEntityReference(model.getEntityRefClass(), cName, model.getXref());
-				PhysicalEntity component = getOrCreatePhysicalEntity(model.getEntityClass(), cName, cRef, null, null, inComplex, null, cellularLocation);
+				Set<String> cModificationTypes = null;
+				Set<String> cModificationNotTypes = null;
+//				EntityReference cRef = getOrCreateEntityReference(model.getEntityRefClass(), cName, model.getXref());
+//				PhysicalEntity component = getOrCreatePhysicalEntity(model.getEntityClass(), cName, cRef, null, null, inComplex, null, cellularLocation);
+				PhysicalEntity component = physicalEntityFromModel(model, cModificationTypes, cModificationNotTypes, inComplex);
 				((Complex) entity).addComponent(component);
 			}
 		}
@@ -616,7 +672,7 @@ public class BioPAXModel {
 		return entity;
 	}
 	
-	// create a new controlled vocabulary initialized with the given term
+	// create a new controlled vocabulary initialized with the given term and xref if exists
 	private <T extends ControlledVocabulary> T addNewControlledVocabulary(Class<T> c, String term) {
 		T vocab = addNew(c);
 		

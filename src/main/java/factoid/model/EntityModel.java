@@ -22,9 +22,9 @@ public class EntityModel {
 	private String type;
 	private List<EntityModel> components;
 	private XrefModel organism;
-	private String cellularLocation;
+	private CellularLocationModel cellularLocation;
 	
-	public EntityModel(String name, XrefModel xref, String type, XrefModel organism, List<EntityModel> components, String cellularLocation) {
+	public EntityModel(String name, XrefModel xref, String type, XrefModel organism, List<EntityModel> components, CellularLocationModel cellularLocation) {
 		this.name = name;
 		this.xref = xref;
 		this.type = type;
@@ -63,7 +63,7 @@ public class EntityModel {
 		this.type = type;
 	}
 	
-	public void setCellularLocation(String cellularLocation) {
+	public void setCellularLocation(CellularLocationModel cellularLocation) {
 		this.cellularLocation = cellularLocation;
 	}
 	
@@ -79,7 +79,7 @@ public class EntityModel {
 		return type;
 	}
 	
-	public String getCellularLocation() {
+	public CellularLocationModel getCellularLocation() {
 		return cellularLocation;
 	}
 	
