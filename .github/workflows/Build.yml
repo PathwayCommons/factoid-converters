@@ -27,6 +27,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Set up Codecov
+      - uses: codecov/codecov-action@v2
+        with:
+          fail_ci_if_error: false
+          verbose: true
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
