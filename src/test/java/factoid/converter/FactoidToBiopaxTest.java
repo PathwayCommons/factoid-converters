@@ -715,7 +715,7 @@ public class FactoidToBiopaxTest {
 	
 	    Model m = converterResultToModel(converter.convertToBiopax());
 	    assertThat(m.getObjects(Complex.class).size(), equalTo(2));
-	    assertThat(m.getObjects(CellularLocationVocabulary.class).size(), equalTo(1));
+	    assertThat(m.getObjects(CellularLocationVocabulary.class).size(), equalTo(2));
   }
   
   @Test
