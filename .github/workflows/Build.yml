@@ -1,0 +1,57 @@
+name: Build
+
+on:
+  schedule:
+    - cron:  '0 8 * * *'
+  push:
+    branches:
+      - custom_intn
+      - master
+  pull_request:
+    branches:
+      - custom_intn
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    name: Java ${{ matrix.config.java }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {java: 8}
+          - {java: 11}
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: ${{ matrix.config.java }}
+          distribution: 'adopt'
+          cache: gradle
+      - name: Build with Gradle
+        run: |
+          ./gradlew build
+          find . -name '*.jar'
+      - name: Cleanup Gradle Cache
+        # Remove some files from the Gradle cache, so they aren't cached by GitHub Actions.
+        # Restoring these files from a GitHub Actions cache might cause problems for future builds.
+        run: |
+          rm -f ~/.gradle/caches/modules-2/modules-2.lock
+          rm -f ~/.gradle/caches/modules-2/gc.properties
+      - name: Move Artifacts
+        run: |
+          pwd
+          find . -name 'factoid-converters*.jar' -exec bash -c 'mv $0 ./factoid-converters-latest.jar' {} \;
+          ls
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with: 
+          name: 'latest'
+          tag_name: 'latest'
+          prerelease: true
+          files: factoid-converters-latest.jar
