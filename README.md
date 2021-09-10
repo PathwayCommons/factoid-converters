@@ -24,6 +24,33 @@ Once the app is built and running,
 the auto-generated documentation is available at 
 `http://localhost:8080/convert/`
 
+## Input
+
+[Here](https://github.com/PathwayCommons/factoid-converters/blob/custom_intn/src/test/resources/test2.json) is an example data file that factoid converters accepts. Currently accepted interaction types are ``Expression Regulation``, ``Molecular Interaction``, ``Protein Controls State``, ``Custom Interaction`` and ``Other Interaction``.
+
+Note that for ``Custom Interaction`` type the ``scriptPath`` propery must be set. ``scriptPath`` property specifies the path of a Groovy file. The Groovy file is expected to include a Groovy class where ``addIntn()`` methods presents and controls how the interaction will be added to the biopax model. The Groovy script can mainly utilize the functions exposed [here](https://github.com/PathwayCommons/factoid-converters/blob/custom_intn/src/main/java/factoid/model/CustomizableModel.java) and [here](https://github.com/PathwayCommons/factoid-converters/blob/custom_intn/src/main/java/factoid/util/GsonUtil.java). The remaining parameters that a ``Custom Interaction`` is supposed to have (excluding ``type`` property) are determined by the Groovy file that user specifies.
+
+## Using Factoid Converters API
+
+Adding Factoid Converters as a dependency:
+
+See https://jitpack.io/#pathwaycommons/factoid-converters
+
+An example usage of API to convert a model stored in a json file into Biopax:
+
+```java
+Gson gson = new Gson();
+JsonReader reader = new JsonReader(new FileReader(getClass()
+  .getResource("/test2.json").getFile()));
+JsonObject template = gson.fromJson(reader, JsonObject.class);
+FactoidToBiopax converter = new FactoidToBiopax();
+converter.addToModel(template);
+String res = converter.convertToBiopax();
+```
+
+A demo project that utilizes Factoid Converters api is available [here](https://github.com/metincansiper/custom-converter-demo).
+
+
 ## Docker
 You can deploy the server to a docker container by following the steps below  
 (`<PORT>` - actual port number where the server will run). 
