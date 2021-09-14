@@ -1,13 +1,19 @@
 package factoid.model;
 
+import org.biopax.paxtools.model.level3.RelationshipXref;
+import org.biopax.paxtools.model.level3.UnificationXref;
+import org.biopax.paxtools.model.level3.Xref;
+
 public class XrefModel {
 	
 	private String id;
 	private String db;
+	private Class<? extends Xref> c;
 	
 	public XrefModel(String id, String db) {
 		this.id = id;
 		this.db = db;
+		this.c = null;
 	}
 	
 	public void setId(String id) {
@@ -24,5 +30,13 @@ public class XrefModel {
 	
 	public String getDb() {
 		return db;
+	}
+	
+	public Class<? extends Xref> getXrefClass() {
+		return c;
+	}
+	
+	public void setXrefClass(Class<? extends Xref> c) {
+		this.c = c;
 	}
 }

@@ -547,6 +547,48 @@ public class FactoidToBiopaxTest {
     	    assertThat(((Protein)p).getEntityReference().getXref(), not(empty()));
     });
   }
+  
+  @Test
+  //Progesterone chemical-affects LEP (case 4D) is about activation of LEP protein (catalyst) by Progesterone.
+  public void testXrefTypes() throws IOException {
+	// in this example I modified the example that is used for "testChemicalAffects()"
+	// the type of the second participant was "protein" but I updated it as "ggp" for this test case
+	// without updating any other field
+    String templates = "[{\n" +
+      "    \"type\": \"Other Interaction\",\n" +
+      "    \"controlType\": \"activation\",\n" +
+      "    \"participants\": [\n" +
+      "      {\n" +
+      "        \"type\": \"chemical\",\n" +
+      "        \"name\": \"Progesterone\",\n" +
+      "        \"xref\": {\n" +
+      "          \"id\": 5994,\n" +
+      "          \"db\": \"pubchem\"\n" +
+      "        }\n" +
+      "      },\n" +
+      "      {\n" +
+      "        \"type\": \"ggp\",\n" +
+      "        \"name\": \"LEP\",\n" +
+      "        \"xref\": {\n" +
+      "          \"id\": \"P41159\",\n" +
+      "          \"db\": \"uniprot\"\n" +
+      "        }\n" +
+      "      }\n" +
+      "    ]\n" +
+      "  }]";
+
+    FactoidToBiopax converter = getBiopaxConvertor(templates, null);
+
+    Model m = converterResultToModel(converter.convertToBiopax());
+    assertThat(m.getObjects().size(), equalTo(9));
+
+    Set<RelationshipXref> relXrefs = m.getObjects(RelationshipXref.class);
+    Set<UnificationXref> uniXrefs = m.getObjects(UnificationXref.class);
+    assertThat(relXrefs, notNullValue());
+    assertThat(relXrefs.size(), equalTo(1));
+    assertThat(uniXrefs, notNullValue());
+    assertThat(uniXrefs.size(), equalTo(1));
+  }
 
   @Test
   //Progesterone chemical-affects LEP (case 4D) is about activation of LEP protein (catalyst) by Progesterone.

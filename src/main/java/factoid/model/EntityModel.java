@@ -9,10 +9,13 @@ import org.biopax.paxtools.model.level3.EntityReference;
 import org.biopax.paxtools.model.level3.PhysicalEntity;
 import org.biopax.paxtools.model.level3.Protein;
 import org.biopax.paxtools.model.level3.ProteinReference;
+import org.biopax.paxtools.model.level3.RelationshipXref;
 import org.biopax.paxtools.model.level3.Rna;
 import org.biopax.paxtools.model.level3.RnaReference;
 import org.biopax.paxtools.model.level3.SmallMolecule;
 import org.biopax.paxtools.model.level3.SmallMoleculeReference;
+import org.biopax.paxtools.model.level3.UnificationXref;
+import org.biopax.paxtools.model.level3.Xref;
 
 // TODO: decide if cellular location and other modification, modification not features must be added to here
 public class EntityModel {
@@ -31,8 +34,6 @@ public class EntityModel {
 		this.components = components;
 		this.organism = organism;
 		this.cellularLocation = cellularLocation;
-		
-		System.out.println(cellularLocation);
 	}
 	
 	public EntityModel(String name, XrefModel xref, String type, XrefModel organism, List<EntityModel> components) {
@@ -89,6 +90,13 @@ public class EntityModel {
 	
 	public List<EntityModel> getComponentModels() {
 		return components;
+	}
+	
+	public Class<? extends Xref> getEntityXrefClass() {
+		if ("ggp".equalsIgnoreCase(type)) {
+			return UnificationXref.class;
+		}
+		return RelationshipXref.class;
 	}
 	
 	public Class<? extends PhysicalEntity> getEntityClass() {

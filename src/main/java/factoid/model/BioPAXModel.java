@@ -67,7 +67,7 @@ public class BioPAXModel {
 	// is enough (meaning if the xrefDb must also be used in that check). That may affect the keys in cellularLocationMap
 	// as well.
 	// Map of entity xref id to xref itself
-	private Map<String, RelationshipXref> xrefMap;
+	private Map<String, Xref> xrefMap;
 	// Map of cellular location xref id to xref itself
 	private Map<String, UnificationXref> cellularLocationXrefMap;
 	private Map<String, BioSource> organismMap;
@@ -85,7 +85,7 @@ public class BioPAXModel {
 		pathway = addNew(Pathway.class);
 		
 		cellularLocationMap = new MultiKeyMap<Object, CellularLocationVocabulary>();
-		xrefMap = new HashMap<String, RelationshipXref>();
+		xrefMap = new HashMap<String, Xref>();
 		cellularLocationXrefMap = new HashMap<String, UnificationXref>();
 		organismMap = new HashMap<String, BioSource>();
 		entityReferenceMap = new MultiKeyMap<Object, EntityReference>();
@@ -160,9 +160,13 @@ public class BioPAXModel {
 		String name = entityModel.getName();
 		XrefModel xref = entityModel.getXref();
 		XrefModel org = entityModel.getOrganism();
+		Class xrefClass = entityModel.getEntityXrefClass();
 		
 		List<EntityModel> componentModels = entityModel.getComponentModels();
 		
+		if ( xref != null ) {
+			xref.setXrefClass(xrefClass);
+		}
 		
 		Class<? extends EntityReference> entityRefClass = entityModel.getEntityRefClass();
 		Class<? extends PhysicalEntity> entityClass = entityModel.getEntityClass();
@@ -231,17 +235,21 @@ public class BioPAXModel {
 		return getOrCreatePhysicalEntity(c, null);
 	}
 	
-	public RelationshipXref getOrCreateEntityXref(XrefModel xrefModel) {
+	public Xref getOrCreateEntityXref(XrefModel xrefModel) {
 		
 		if (xrefModel == null) {
 			return null;
 		}
 		
 		String xrefId = xrefModel.getId();
-		RelationshipXref xref = xrefMap.get(xrefId);
+		Xref xref = xrefMap.get(xrefId);
 		
 		if (xref == null) {
-			xref = addNew(RelationshipXref.class);
+			// TODO: assert that xrefModel.getXrefClass() is not null
+			if ( xrefModel.getXrefClass() == null ) {
+				System.out.println("null xref class");
+			}
+			xref = addNew(xrefModel.getXrefClass());
 			xref.setId(xrefId);
 			xref.setDb(xrefModel.getDb());
 			xrefMap.put(xrefId, xref);
@@ -312,7 +320,7 @@ public class BioPAXModel {
 		}
 		
 		T entityRef = null;
-		RelationshipXref xref = getOrCreateEntityXref(xrefModel);
+		Xref xref = getOrCreateEntityXref(xrefModel);
 		BioSource organism = null;
 		
 		if ( organismModel != null ) {
@@ -711,7 +719,7 @@ public class BioPAXModel {
 	}
 	
 	// Create a new entity reference by given properties
-	private <T extends EntityReference> T addNewEntityReference(Class<T> c, String name, RelationshipXref xref, BioSource organism) {
+	private <T extends EntityReference> T addNewEntityReference(Class<T> c, String name, Xref xref, BioSource organism) {
 		
 		T entityRef = addNew(c);
 		

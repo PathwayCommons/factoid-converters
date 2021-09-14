@@ -2,6 +2,7 @@ package factoid.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import org.biopax.paxtools.model.level3.Conversion;
 import org.biopax.paxtools.model.level3.ConversionDirectionType;
 import org.biopax.paxtools.model.level3.Protein;
 import org.biopax.paxtools.model.level3.ProteinReference;
+import org.biopax.paxtools.model.level3.RelationshipXref;
 import org.biopax.paxtools.model.level3.SmallMoleculeReference;
 import org.junit.Test;
 
@@ -37,25 +39,24 @@ public class BioPAXModelTest {
 		Set<String> modificationTypes2 = new HashSet<String>();
 		modificationTypes2.add("inactive");
 		
-		ProteinReference protRef = model.getOrCreateEntityReference(ProteinReference.class, protName, protXref);
-		
-		Protein prot1 = model.getOrCreatePhysicalEntity(Protein.class, protName, protRef, modificationTypes, null);
+		EntityModel protModel = new EntityModel(protName, protXref, "protein");
+		Protein prot1 = model.physicalEntityFromModel(protModel, modificationTypes, null);
 		
 		assertTrue("Protein is added to the model", innerModel.contains(prot1));
 		assertEquals("Protein name is set", prot1.getDisplayName(), protName);
-		assertEquals("Protein reference is set", protRef, prot1.getEntityReference());
+		assertNotNull("Protein reference is set", prot1.getEntityReference());
 		assertEquals("Protein modification types are set", modificationTypes.size(), prot1.getFeature().size());
-		assertEquals("Protein reference has a new modification", 1, protRef.getEntityFeature().size());
+		assertEquals("Protein reference has a new modification", 1, prot1.getEntityReference().getEntityFeature().size());
 		
-		Protein prot2 = model.getOrCreatePhysicalEntity(Protein.class, protName, protRef, modificationTypes, null);
+		Protein prot2 = model.physicalEntityFromModel(protModel, modificationTypes, null);
 		assertEquals("No duplication in adding the second Protein with same features", prot1, prot2);
 		
-		Protein prot3 = model.getOrCreatePhysicalEntity(Protein.class, protName, protRef);
+		Protein prot3 = model.physicalEntityFromModel(protModel);
 		assertNotEquals("A new protein is added with no modification", prot1, prot3);
 		
-		Protein prot4 = model.getOrCreatePhysicalEntity(Protein.class, protName, protRef, modificationTypes2, null);
+		Protein prot4 = model.physicalEntityFromModel(protModel, modificationTypes2, null);
 		assertNotEquals("A new protein is added with with different modifications", prot1, prot4);
-		assertEquals("Protein reference has a new modification", 2, protRef.getEntityFeature().size());
+		assertEquals("Protein reference has a new modification", 2, prot1.getEntityReference().getEntityFeature().size());
 	}
 	
 	@Test
@@ -71,6 +72,7 @@ public class BioPAXModelTest {
 		
 		// TODO: add tests for same name but different xref as well
 		XrefModel commonXref = new XrefModel("common-xref", "uniprot");
+		commonXref.setXrefClass(RelationshipXref.class);
 		
 		ProteinReference protRef1 = model.getOrCreateEntityReference(ProteinReference.class, commonName, commonXref);
 		assertTrue("Protein reference is added to the model", innerModel.contains(protRef1));
@@ -139,8 +141,9 @@ public class BioPAXModelTest {
 		
 		Conversion controlled = model.addNewConversion(Conversion.class);
 		String protName = "prot1";
-		ProteinReference controllerref = model.getOrCreateEntityReference(ProteinReference.class, protName, null);
-		Protein controller = model.getOrCreatePhysicalEntity(Protein.class, protName, controllerref);
+		XrefModel xrefModel = new XrefModel("test_id", "test_db");
+		EntityModel entityModel = new EntityModel(protName, xrefModel, "protein");
+		Protein controller = model.physicalEntityFromModel(entityModel);
 		ControlType controlType = ControlType.ACTIVATION;
 		
 		Control control = model.addNewControl(Control.class, controller, controlled, controlType);
