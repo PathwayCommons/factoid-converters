@@ -245,11 +245,11 @@ public class BioPAXModel {
 		Xref xref = xrefMap.get(xrefId);
 		
 		if (xref == null) {
-			// TODO: assert that xrefModel.getXrefClass() is not null
-			if ( xrefModel.getXrefClass() == null ) {
-				System.out.println("null xref class");
-			}
-			xref = addNew(xrefModel.getXrefClass());
+			Class<? extends Xref> xrefClass = xrefModel.getXrefClass();
+			assert xrefClass != null : 
+				"xref class is not expected to be null inside getOrCreateEntityXref() function";
+
+			xref = addNew(xrefClass);
 			xref.setId(xrefId);
 			xref.setDb(xrefModel.getDb());
 			xrefMap.put(xrefId, xref);
