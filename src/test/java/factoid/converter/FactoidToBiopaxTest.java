@@ -14,18 +14,29 @@ import org.biopax.paxtools.model.*;
 import org.biopax.paxtools.model.level3.*;
 import org.biopax.paxtools.model.level3.Process;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 //TODO: test each distinct json template (cases 1 - 4E from the interaction types doc.)
@@ -758,6 +769,77 @@ public class FactoidToBiopaxTest {
 	    Model m = converterResultToModel(converter.convertToBiopax());
 	    assertThat(m.getObjects(Complex.class).size(), equalTo(2));
 	    assertThat(m.getObjects(CellularLocationVocabulary.class).size(), equalTo(1));
+  }
+  
+  @Test
+  public void testCustomIntnsWithValidation() throws IOException {
+	  String templates = "[{\n" +
+		      "    \"type\": \"Custom Interaction\",\n" +
+		      "    \"scriptRelPath\": \"src/test/resources/GroovyIntn2.groovy\",\n" +
+		      "    \"participants\": [\n" +
+		      "      {\n" +
+		      "        \"type\": \"protein\",\n" +
+		      "        \"name\": \"Aurora B\",\n" +
+		      "        \"xref\": {\n" +
+		      "          \"id\": \"Q96GD4\",\n" +
+		      "          \"db\": \"UniProtKB\"\n" +
+		      "        },\n" +
+		      "        \"cellularLocation\": {\n" +
+		      "          \"term\": \"inner kinetochore of condensed chromosome\",\n" +
+		      "          \"xref\": {\n" +
+		      "          	\"id\": \"GO:0000939\",\n" +
+		      "          	\"db\": \"gene ontology\"\n" +
+		      "    		}\n" +
+		      "        },\n" +
+		      "        \"organism\": {\n" +
+		      "          \"id\": 9606,\n" +
+		      "          \"db\": \"taxonomy\"\n" +
+		      "        }\n" +
+		      "      },\n" +
+		      "      {\n" +
+		      "        \"type\": \"protein\",\n" +
+		      "        \"name\": \"Aurora B\",\n" +
+		      "        \"xref\": {\n" +
+		      "          \"id\": \"Q96GD4\",\n" +
+		      "          \"db\": \"UniProtKB\"\n" +
+		      "        },\n" +
+		      "        \"organism\": {\n" +
+		      "          \"id\": 9606,\n" +
+		      "          \"db\": \"taxonomy\"\n" +
+		      "        }\n" +
+		      "      }\n" +
+		      "    ]\n" +
+		      "  }]";
+	    FactoidToBiopax converter = getBiopaxConvertor(templates, null);
+	
+	    Model m = converterResultToModel(converter.convertToBiopax());
+	    assertThat(m.getObjects(Transport.class).size(), equalTo(1));
+	    assertThat(m.getObjects(CellularLocationVocabulary.class).size(), equalTo(1));
+	    
+	    // we expect one error (where type="ERROR") caused by usage of relationship xref rather then unification xref
+	    // see if there is any unexpected one
+	    boolean foundUnexpectedError = false;
+		try {
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			InputStream inputStream = new ByteArrayInputStream(converter.validate().getBytes());
+			Document document = builder.parse(inputStream);
+			NodeList errorNodes = document.getElementsByTagName("error");
+			
+			for ( int i = 0; i < errorNodes.getLength(); i++ ) {
+				Node errorNode = errorNodes.item(i);
+				String type = errorNode.getAttributes().getNamedItem("type").getNodeValue();
+				String code = errorNode.getAttributes().getNamedItem("code").getNodeValue();
+				
+				if ( type.equals("ERROR") && !code.equals("no.unification.xref") ) {
+					foundUnexpectedError = true;
+				}
+			}
+		} catch (ParserConfigurationException | SAXException e) {
+			e.printStackTrace();
+		}
+		
+		assertFalse(foundUnexpectedError);
   }
   
   @Test
