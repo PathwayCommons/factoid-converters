@@ -125,6 +125,14 @@ public class BioPAXModel {
 	
 	// add a new element to model with given id
 	public <T extends BioPAXElement> T addNew(Class<T> c, String id, boolean omitPathwayComponent) {
+		if ( id == null ) {
+			id = generateIdForClassName(c.getSimpleName());
+		}
+		
+		// TODO: find another way of getting rid of biopax error caused by ":" character
+		id = id.replaceAll(":", "_");
+		id = id.replaceAll(" ", "_");
+		
 		T el = model.addNew(c, id);
 		
 		if( !omitPathwayComponent && isInteractionOrSubclass(c) ) {
@@ -139,12 +147,16 @@ public class BioPAXModel {
 		return addNew(c, false);
 	}
 	
+	public <T extends BioPAXElement> T addNew(Class<T> c, String id) {
+		return addNew(c, id, false);
+	}
+	
 	// add a new element to model by generating element id
 	// if omitPathwayComponent parameter is not set to false then create
 	// a pathway component for the element if it is an instance of
 	// interaction or a subclass of interaction
 	public <T extends BioPAXElement> T addNew(Class<T> c, boolean omitPathwayComponent) {
-		return addNew(c, generateUUID(), omitPathwayComponent);
+		return addNew(c, null, omitPathwayComponent);
 	}
 	
 	public <T extends PhysicalEntity> T physicalEntityFromModel(EntityModel entityModel) {
@@ -249,7 +261,7 @@ public class BioPAXModel {
 			assert xrefClass != null : 
 				"xref class is not expected to be null inside getOrCreateEntityXref() function";
 
-			xref = addNew(xrefClass);
+			xref = addNewXref(xrefClass, xrefModel);
 			xref.setId(xrefId);
 			xref.setDb(xrefModel.getDb());
 			xrefMap.put(xrefId, xref);
@@ -268,9 +280,7 @@ public class BioPAXModel {
 		UnificationXref xref = cellularLocationXrefMap.get(xrefId);
 		
 		if (xref == null) {
-			xref = addNew(UnificationXref.class);
-			xref.setId(xrefId);
-			xref.setDb(xrefModel.getDb());
+			xref = addNewXref(UnificationXref.class, xrefModel);
 			cellularLocationXrefMap.put(xrefId, xref);
 		}
 		
@@ -355,9 +365,7 @@ public class BioPAXModel {
 		
 		if (org == null) {
 			org = addNew(BioSource.class);
-			UnificationXref xref = addNew(UnificationXref.class);
-			xref.setId(orgId);
-			xref.setDb(organismModel.getDb());
+			UnificationXref xref = addNewXref(UnificationXref.class, organismModel);
 			org.addXref(xref);
 		}
 		
@@ -425,7 +433,7 @@ public class BioPAXModel {
 	
 	// Generate unique id for new elements
 	private static String generateUUID() {
-		return UUID.randomUUID().toString();
+		return UUID.randomUUID().toString().replaceAll("-", "");
 	}
 	
 	// Find the physical entity that has the expected cellular location and modification types
@@ -624,6 +632,24 @@ public class BioPAXModel {
 		return collection.iterator().next();
 	}
 	
+	private <T extends Xref> T addNewXref(Class<T> c, String xrefId, String xrefDb) {
+		if (xrefId.equals("P07267test")) {
+			System.out.println(xrefId);
+		}
+		// set biopax id based on xref model
+		String bpId = c.getSimpleName() + "_" + xrefDb + "_" + xrefId;
+		T xref = addNew(c, bpId);
+		xref.setId(xrefId);
+		xref.setDb(xrefDb);
+		return xref;
+	}
+	
+	private <T extends Xref> T addNewXref(Class<T> c, XrefModel model) {
+		String id = model.getId();
+		String db = model.getDb();
+		return addNewXref(c, id, db);
+	}
+	
 	// Create a new physical entity with given properties
 	private <T extends PhysicalEntity> T addNewPhysicalEntity(Class<T> c, String name, EntityReference entityRef, 
 			Set<String> modificationTypes, Set<String> modificationNotTypes, List<EntityModel> componentModels, CellularLocationVocabulary cellularLocation) {
@@ -720,8 +746,23 @@ public class BioPAXModel {
 	
 	// Create a new entity reference by given properties
 	private <T extends EntityReference> T addNewEntityReference(Class<T> c, String name, Xref xref, BioSource organism) {
-		
-		T entityRef = addNew(c);
+		String xrefId = xref.getId();
+		String xrefDb = xref.getDb();
+		String id = null;
+		// TODO: check if these are valid ids
+		if ( xrefDb.contains("uniprot") ) {
+			id = "http://identifiers.org/uniprot/" + xrefId;
+		}
+		else if ( xrefDb.equalsIgnoreCase("chebi") ) {
+			id = "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:" + xrefId;
+		}
+//		else if ( xrefDb.equalsIgnoreCase("hgnc") ) {
+//			id = "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/HGNC:" + xrefId;
+//		}
+		else {
+			id = generateIdForClassName(c.getSimpleName());
+		}
+		T entityRef = addNew(c, id);
 		
 		if(name != null) {
 			entityRef.setDisplayName(name);
@@ -746,11 +787,12 @@ public class BioPAXModel {
 		return entityRef;
 	}
 
+	private String generateIdForClassName(String name) {
+		return name + "" + "_" + generateUUID();
+	}
+
 	public void createPublicaitonXref(XrefModel model) {
-		PublicationXref xref = addNew(PublicationXref.class);
-		xref.setId(model.getId());
-		xref.setDb(model.getDb());
-		
+		PublicationXref xref = addNewXref(PublicationXref.class, model);
 		pathway.addXref(xref);
 	}
 
@@ -759,10 +801,7 @@ public class BioPAXModel {
 	}
 
 	public void setPatwayId(String id) {
-		UnificationXref xref = addNew(UnificationXref.class);
-		xref.setId(id);
-		xref.setDb("BioFactoid");
-		
+		UnificationXref xref = addNewXref(UnificationXref.class, id, "BioFactoid");
 		pathway.addXref(xref);
 	}
 }

@@ -962,6 +962,54 @@ public class FactoidToBiopaxTest {
    Model m = converterResultToModel(converter.convertToBiopax());
    assertThat(m.getObjects(BioSource.class).size(), equalTo(1));
  }
+ 
+ @Test
+ public void testBiopaxIds() throws IOException {
+	 String templates = "[{\n" +
+		      "    \"type\": \"Other Interaction\",\n" +
+		      "    \"participants\": [\n" +
+		      "      {\n" +
+		      "        \"type\": \"protein\",\n" +
+		      "        \"name\": \"Saccharopepsin\",\n" +
+		      "        \"xref\": {\n" +
+		      "          \"id\": P07267,\n" +
+		      "          \"db\": \"uniprot\"\n" +
+		      "        }\n" +
+		      "      },\n" +
+		      "      {\n" +
+		      "        \"type\": \"chemical\",\n" +
+		      "        \"name\": \"ChemName\",\n" +
+		      "        \"xref\": {\n" +
+		      "          \"id\": 000000,\n" +
+		      "          \"db\": \"unsupported\"\n" +
+		      "        }\n" +
+		      "      }\n" +
+		      "    ]\n" +
+		      "  }]";
+	
+	FactoidToBiopax converter = getBiopaxConvertor(templates, null);
+
+   Model m = converterResultToModel(converter.convertToBiopax());
+   
+   assertThat(m.getObjects(Protein.class).size(), equalTo(1));
+   assertThat(m.getObjects(SmallMolecule.class).size(), equalTo(1));
+   
+   Protein prot = m.getObjects(Protein.class).iterator().next();
+   SmallMolecule chem = m.getObjects(SmallMolecule.class).iterator().next();
+   EntityReference protRef = prot.getEntityReference();
+   EntityReference chemRef = chem.getEntityReference();
+   
+   // TODO: get rid of biopax error caused by ":" character in another way?
+   assertThat(protRef.getUri(), equalTo("http_//identifiers.org/uniprot/" + "P07267"));
+   assertThat(chemRef.getUri(), containsStringIgnoringCase("SmallMoleculeReference"));
+   assertThat(protRef.getXref().size(), equalTo(1));
+   assertThat(chemRef.getXref().size(), equalTo(1));
+   
+   Xref protXref = protRef.getXref().iterator().next();
+   Xref chemXref = chemRef.getXref().iterator().next();
+   assertThat(protXref.getUri(), endsWithIgnoringCase("_" + protXref.getDb() + "_" + protXref.getId()));
+   assertThat(chemXref.getUri(), endsWithIgnoringCase("_" + chemXref.getDb() + "_" + chemXref.getId()));
+ }
 
   //local utils
 

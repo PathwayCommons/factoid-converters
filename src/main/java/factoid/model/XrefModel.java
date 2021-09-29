@@ -1,7 +1,5 @@
 package factoid.model;
 
-import org.biopax.paxtools.model.level3.RelationshipXref;
-import org.biopax.paxtools.model.level3.UnificationXref;
 import org.biopax.paxtools.model.level3.Xref;
 
 public class XrefModel {
