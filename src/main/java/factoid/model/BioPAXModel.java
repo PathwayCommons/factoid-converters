@@ -129,7 +129,6 @@ public class BioPAXModel {
 			id = generateIdForClassName(c.getSimpleName());
 		}
 		
-		// TODO: find another way of getting rid of biopax error caused by ":" character
 		id = id.replaceAll(":", "_");
 		id = id.replaceAll(" ", "_");
 		
@@ -749,16 +748,15 @@ public class BioPAXModel {
 		String xrefId = xref.getId();
 		String xrefDb = xref.getDb();
 		String id = null;
-		// TODO: check if these are valid ids
 		if ( xrefDb.contains("uniprot") ) {
 			id = "http://identifiers.org/uniprot/" + xrefId;
 		}
 		else if ( xrefDb.equalsIgnoreCase("chebi") ) {
 			id = "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:" + xrefId;
 		}
-//		else if ( xrefDb.equalsIgnoreCase("hgnc") ) {
-//			id = "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/HGNC:" + xrefId;
-//		}
+		else if ( xrefDb.equalsIgnoreCase("hgnc") ) {
+			id = "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/HGNC:" + xrefId;
+		}
 		else {
 			id = generateIdForClassName(c.getSimpleName());
 		}

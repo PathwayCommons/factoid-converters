@@ -999,7 +999,6 @@ public class FactoidToBiopaxTest {
    EntityReference protRef = prot.getEntityReference();
    EntityReference chemRef = chem.getEntityReference();
    
-   // TODO: get rid of biopax error caused by ":" character in another way?
    assertThat(protRef.getUri(), equalTo("http_//identifiers.org/uniprot/" + "P07267"));
    assertThat(chemRef.getUri(), containsStringIgnoringCase("SmallMoleculeReference"));
    assertThat(protRef.getXref().size(), equalTo(1));
