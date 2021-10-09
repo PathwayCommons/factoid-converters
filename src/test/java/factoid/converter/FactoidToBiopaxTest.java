@@ -816,7 +816,9 @@ public class FactoidToBiopaxTest {
 	    assertThat(m.getObjects(Transport.class).size(), equalTo(1));
 	    assertThat(m.getObjects(CellularLocationVocabulary.class).size(), equalTo(1));
 	    
-	    // we expect one error (where type="ERROR") caused by usage of relationship xref rather then unification xref
+	    // we expect one error (where type="ERROR") caused by:
+	    // usage of relationship xref rather then unification xref ("no.unification.xref")
+	    // and usage of some chars in ids ("invalid.rdf.id")
 	    // see if there is any unexpected one
 	    boolean foundUnexpectedError = false;
 		try {
@@ -831,7 +833,7 @@ public class FactoidToBiopaxTest {
 				String type = errorNode.getAttributes().getNamedItem("type").getNodeValue();
 				String code = errorNode.getAttributes().getNamedItem("code").getNodeValue();
 				
-				if ( type.equals("ERROR") && !code.equals("no.unification.xref") ) {
+				if ( type.equals("ERROR") && !( code.equals("no.unification.xref") || code.equals("invalid.rdf.id") ) ) {
 					foundUnexpectedError = true;
 				}
 			}
@@ -999,7 +1001,7 @@ public class FactoidToBiopaxTest {
    EntityReference protRef = prot.getEntityReference();
    EntityReference chemRef = chem.getEntityReference();
    
-   assertThat(protRef.getUri(), equalTo("http_//identifiers.org/uniprot/" + "P07267"));
+   assertThat(protRef.getUri(), equalTo("http://identifiers.org/uniprot/" + "P07267"));
    assertThat(chemRef.getUri(), containsStringIgnoringCase("SmallMoleculeReference"));
    assertThat(protRef.getXref().size(), equalTo(1));
    assertThat(chemRef.getXref().size(), equalTo(1));

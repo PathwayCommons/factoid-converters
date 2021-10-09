@@ -67,25 +67,22 @@ public class BioPAXModelTest {
 		// Underlying PAXTools model
 		Model innerModel = model.getPaxtoolsModel();
 		
-		String commonName = "Protein1";
-		String uniqueName = "Protein2";
-		
 		// TODO: add tests for same name but different xref as well
 		XrefModel commonXref = new XrefModel("common-xref", "uniprot");
 		commonXref.setXrefClass(RelationshipXref.class);
 		
-		ProteinReference protRef1 = model.getOrCreateEntityReference(ProteinReference.class, commonName, commonXref);
+		XrefModel uniqXref = new XrefModel("uniq-xref", "uniprot");
+		uniqXref.setXrefClass(RelationshipXref.class);
+		
+		ProteinReference protRef1 = model.getOrCreateEntityReference(ProteinReference.class, commonXref);
 		assertTrue("Protein reference is added to the model", innerModel.contains(protRef1));
-		assertEquals("Protein reference name is set", commonName, protRef1.getDisplayName());
+		assertNotNull("Protein reference xref is set", protRef1.getXref());
 		
-		ProteinReference protRef2 = model.getOrCreateEntityReference(ProteinReference.class, commonName, commonXref);
-		assertEquals("No duplication in adding second protein modification with same name", protRef1, protRef2);
+		ProteinReference protRef2 = model.getOrCreateEntityReference(ProteinReference.class, commonXref);
+		assertEquals("No duplication in adding second protein modification with same xref", protRef1, protRef2);
 		
-		SmallMoleculeReference smRef = model.getOrCreateEntityReference(SmallMoleculeReference.class, commonName, commonXref);
-		assertNotEquals("A new small molecule reference is added that has an existing protein reference name", protRef2, smRef);
-		
-		ProteinReference protRef3 = model.getOrCreateEntityReference(ProteinReference.class, uniqueName, commonXref);
-		assertNotEquals("A new protein is added with a new name", protRef1, protRef3);
+		ProteinReference protRef3 = model.getOrCreateEntityReference(ProteinReference.class, uniqXref);
+		assertNotEquals("A new protein is added with a new xref", protRef1, protRef3);
 	}
 	
 //	@Test

@@ -72,7 +72,7 @@ public class BioPAXModel {
 	private Map<String, UnificationXref> cellularLocationXrefMap;
 	private Map<String, BioSource> organismMap;
 	// Multiple key map of entity reference class and name to entity reference itself
-	private MultiKeyMap<Object, EntityReference> entityReferenceMap;
+	private Map<Xref, EntityReference> entityReferenceMap;
 	// Multiple key map of entity name class and name to entity reference itself
 	private MultiKeyMap<Object, Set<PhysicalEntity>> noRefPhysicalEntityMap;
 	
@@ -88,7 +88,7 @@ public class BioPAXModel {
 		xrefMap = new HashMap<String, Xref>();
 		cellularLocationXrefMap = new HashMap<String, UnificationXref>();
 		organismMap = new HashMap<String, BioSource>();
-		entityReferenceMap = new MultiKeyMap<Object, EntityReference>();
+		entityReferenceMap = new HashMap<Xref, EntityReference>();
 		noRefPhysicalEntityMap = new MultiKeyMap<Object, Set<PhysicalEntity>>();
 	}
 
@@ -129,7 +129,6 @@ public class BioPAXModel {
 			id = generateIdForClassName(c.getSimpleName());
 		}
 		
-		id = id.replaceAll(":", "_");
 		id = id.replaceAll(" ", "_");
 		
 		T el = model.addNew(c, id);
@@ -181,7 +180,7 @@ public class BioPAXModel {
 		
 		Class<? extends EntityReference> entityRefClass = entityModel.getEntityRefClass();
 		Class<? extends PhysicalEntity> entityClass = entityModel.getEntityClass();
-		EntityReference entityRef = getOrCreateEntityReference(entityRefClass, name, xref, org);
+		EntityReference entityRef = getOrCreateEntityReference(entityRefClass, xref, org);
 		CellularLocationModel cellularLocationModel = entityModel.getCellularLocation();
 		CellularLocationVocabulary cellularLocation = null;
 		if ( cellularLocationModel != null ) {
@@ -322,7 +321,7 @@ public class BioPAXModel {
 	}
 	
 	// Get entity reference that has given name and class, create a new one is not available yet.
-	public <T extends EntityReference> T getOrCreateEntityReference(Class<T> c, String name, XrefModel xrefModel, XrefModel organismModel) {
+	public <T extends EntityReference> T getOrCreateEntityReference(Class<T> c, XrefModel xrefModel, XrefModel organismModel) {
 		
 		if ( c == null ) {
 			return null;
@@ -336,22 +335,22 @@ public class BioPAXModel {
 			organism = getOrCreateOrganism(organismModel);
 		}
 		
-		// if a name is specified try to get an existing entity reference with the
-		// same name and entity class first
-		if (name != null) {
-			entityRef = (T) entityReferenceMap.get(c, name, xref, organism);
+		// if an xref is specified try to get an existing entity reference with the
+		// same xref and entity class first
+		if (xref != null) {
+			entityRef = (T) entityReferenceMap.get(xref);
 		}
 		
 		if (entityRef == null) {
-			entityRef = addNewEntityReference(c, name, xref, organism);
-			entityReferenceMap.put(c, name, xref, organism, entityRef);
+			entityRef = addNewEntityReference(c, xref, organism);
+			entityReferenceMap.put(xref, entityRef);
 		}
 		
 		return entityRef;
 	}
 	
-	public <T extends EntityReference> T getOrCreateEntityReference(Class<T> c, String name, XrefModel xrefModel) {
-		return getOrCreateEntityReference(c, name, xrefModel, null);
+	public <T extends EntityReference> T getOrCreateEntityReference(Class<T> c, XrefModel xrefModel) {
+		return getOrCreateEntityReference(c, xrefModel, null);
 	}
 	
 	private BioSource getOrCreateOrganism(XrefModel organismModel) {
@@ -744,27 +743,23 @@ public class BioPAXModel {
 	}
 	
 	// Create a new entity reference by given properties
-	private <T extends EntityReference> T addNewEntityReference(Class<T> c, String name, Xref xref, BioSource organism) {
+	private <T extends EntityReference> T addNewEntityReference(Class<T> c, Xref xref, BioSource organism) {
 		String xrefId = xref.getId();
-		String xrefDb = xref.getDb();
+		String xrefDb = xref.getDb().toLowerCase();
 		String id = null;
 		if ( xrefDb.contains("uniprot") ) {
 			id = "http://identifiers.org/uniprot/" + xrefId;
 		}
-		else if ( xrefDb.equalsIgnoreCase("chebi") ) {
+		else if ( xrefDb.equals("chebi") ) {
 			id = "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:" + xrefId;
 		}
-		else if ( xrefDb.equalsIgnoreCase("hgnc") ) {
+		else if ( xrefDb.equals("hgnc") ) {
 			id = "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/HGNC:" + xrefId;
 		}
 		else {
 			id = generateIdForClassName(c.getSimpleName());
 		}
 		T entityRef = addNew(c, id);
-		
-		if(name != null) {
-			entityRef.setDisplayName(name);
-		}
 		
 		if(xref != null) {
 			entityRef.addXref(xref);
