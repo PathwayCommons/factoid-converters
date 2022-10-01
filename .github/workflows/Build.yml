@@ -15,23 +15,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    name: Java ${{ matrix.config.java }}
+
+#    env:
+#      _JAVA_OPTIONS: "--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
+
+    name: Build with Gradle
     
     strategy:
       fail-fast: false
-      matrix:
-        config:
-          - {java: 8}
-          - {java: 11}
 
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: ${{ matrix.config.java }}
-          distribution: 'adopt'
+          java-version: 17
+          distribution: 'temurin'
           cache: gradle
       - name: Build with Gradle
         run: |

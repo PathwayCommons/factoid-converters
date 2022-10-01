@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.2.6.RELEASE'
+        springBootVersion = '2.5.0'
     }
     repositories {
         maven {
@@ -23,7 +23,7 @@ repositories {
         url "https://oss.sonatype.org/content/groups/public/"
     }
     maven {
-        url "https://www.biopax.org/m2repo/releases/"
+        url "https://jitpack.io"
     }
 }
 
@@ -32,19 +32,18 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     runtimeOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    implementation 'org.biopax.paxtools:sbgn-converter:5.2.1-SNAPSHOT'
-    implementation 'com.google.code.gson:gson:2.8.2'
-    implementation 'org.apache.commons:commons-collections4:4.1'
+    implementation 'org.biopax.paxtools:sbgn-converter:5.3.0-SNAPSHOT'
+    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'org.apache.commons:commons-collections4:4.4'
     implementation 'io.springfox:springfox-swagger2:2.7.0'
     implementation 'io.springfox:springfox-swagger-ui:2.7.0'
 
-    //java 9+ does not have Jax B Dependents
-    implementation 'javax.xml.bind:jaxb-api:2.3.0'
-    implementation 'com.sun.xml.bind:jaxb-core:2.3.0'
-    implementation 'com.sun.xml.bind:jaxb-impl:2.3.0'
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'com.sun.xml.bind:jaxb-core:2.3.0.1'
+    implementation 'com.sun.xml.bind:jaxb-impl:2.3.6'
     implementation 'javax.activation:activation:1.1.1'
 }
 
-sourceCompatibility = 1.8
+sourceCompatibility = 8
 group = 'pathwaycommons'
-version =  '0.4.0'
+version =  '0.2.2'

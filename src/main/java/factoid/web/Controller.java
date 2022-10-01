@@ -37,10 +37,7 @@ public class Controller {
     produces = "application/vnd.biopax.rdf+xml"
   )
   public String jsonToBiopax(
-    @ApiParam("Factoid document content (JSON string)") @RequestBody String body
-    //TODO: add url/path options as needed
-//  ,  @ApiParam("test") @RequestParam(required = false) String test
-  ) {
+    @ApiParam("Factoid document content (JSON string)") @RequestBody String body) {
     // Add templates to converter by the reader
     FactoidToBiopax converter = new FactoidToBiopax();
     try {
@@ -107,7 +104,7 @@ public class Controller {
 	  BiopaxToFactoid converter = new BiopaxToFactoid();
 	  try {
 		  InputStream is = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
-	      Model model = new SimpleIOHandler().convertFromOWL(is);
+      Model model = new SimpleIOHandler().convertFromOWL(is);
 		  return converter.convert(model).toString();
 	  } catch (IllegalStateException | JsonSyntaxException | JsonIOException e) {
 		  throw new ConverterException(HttpStatus.BAD_REQUEST, e.getMessage());

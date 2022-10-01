@@ -1,9 +1,5 @@
 package factoid.converter;
 
-
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.*;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,11 +12,13 @@ import java.util.Set;
 import org.biopax.paxtools.io.BioPAXIOHandler;
 import org.biopax.paxtools.io.SimpleIOHandler;
 import org.biopax.paxtools.model.Model;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BiopaxToFactoidTest {
 	
@@ -49,7 +47,7 @@ public class BiopaxToFactoidTest {
 				}
 			}
 			
-			assertThat(entityIds1, is(entityIds2));
+			assertEquals(entityIds1, entityIds2);
 		}
 		
 		

@@ -1,8 +1,8 @@
 package factoid.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +15,7 @@ import org.biopax.paxtools.model.level3.ConversionDirectionType;
 import org.biopax.paxtools.model.level3.Protein;
 import org.biopax.paxtools.model.level3.ProteinReference;
 import org.biopax.paxtools.model.level3.SmallMoleculeReference;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class BioPAXModelTest {
 	
@@ -40,21 +40,21 @@ public class BioPAXModelTest {
 		
 		Protein prot1 = model.getOrCreatePhysicalEntity(Protein.class, protName, protRef, modificationTypes, null);
 		
-		assertTrue("Protein is added to the model", innerModel.contains(prot1));
-		assertEquals("Protein name is set", prot1.getDisplayName(), protName);
-		assertEquals("Protein reference is set", protRef, prot1.getEntityReference());
-		assertEquals("Protein modification types are set", modificationTypes.size(), prot1.getFeature().size());
-		assertEquals("Protein reference has a new modification", 1, protRef.getEntityFeature().size());
+		assertTrue(innerModel.contains(prot1), "Protein is added to the model");
+		assertEquals(prot1.getDisplayName(), protName, "Protein name is set");
+		assertEquals(protRef, prot1.getEntityReference(), "Protein reference is set");
+		assertEquals(modificationTypes.size(), prot1.getFeature().size(), "Protein modification types are set");
+		assertEquals(1, protRef.getEntityFeature().size(), "Protein reference has a new modification");
 		
 		Protein prot2 = model.getOrCreatePhysicalEntity(Protein.class, protName, protRef, modificationTypes, null);
-		assertEquals("No duplication in adding the second Protein with same features", prot1, prot2);
+		assertEquals(prot1, prot2, "No duplication in adding the second Protein with same features");
 		
 		Protein prot3 = model.getOrCreatePhysicalEntity(Protein.class, protName, protRef);
-		assertNotEquals("A new protein is added with no modification", prot1, prot3);
+		assertNotEquals(prot1, prot3, "A new protein is added with no modification");
 		
 		Protein prot4 = model.getOrCreatePhysicalEntity(Protein.class, protName, protRef, modificationTypes2, null);
-		assertNotEquals("A new protein is added with with different modifications", prot1, prot4);
-		assertEquals("Protein reference has a new modification", 2, protRef.getEntityFeature().size());
+		assertNotEquals(prot1, prot4, "A new protein is added with with different modifications");
+		assertEquals(2, protRef.getEntityFeature().size(), "Protein reference has a new modification");
 	}
 	
 	@Test
@@ -72,40 +72,18 @@ public class BioPAXModelTest {
 		XrefModel commonXref = new XrefModel("common-xref", "uniprot");
 		
 		ProteinReference protRef1 = model.getOrCreateEntityReference(ProteinReference.class, commonName, commonXref);
-		assertTrue("Protein reference is added to the model", innerModel.contains(protRef1));
-		assertEquals("Protein reference name is set", commonName, protRef1.getDisplayName());
+		assertTrue(innerModel.contains(protRef1), "Protein reference is added to the model");
+		assertEquals(commonName, protRef1.getDisplayName(), "Protein reference name is set");
 		
 		ProteinReference protRef2 = model.getOrCreateEntityReference(ProteinReference.class, commonName, commonXref);
-		assertEquals("No duplication in adding second protein modification with same name", protRef1, protRef2);
+		assertEquals(protRef1, protRef2, "No duplication in adding second protein modification with same name");
 		
 		SmallMoleculeReference smRef = model.getOrCreateEntityReference(SmallMoleculeReference.class, commonName, commonXref);
-		assertNotEquals("A new small molecule reference is added that has an existing protein reference name", protRef2, smRef);
+		assertNotEquals(protRef2, smRef, "A new small molecule reference is added that has an existing protein reference name");
 		
 		ProteinReference protRef3 = model.getOrCreateEntityReference(ProteinReference.class, uniqueName, commonXref);
-		assertNotEquals("A new protein is added with a new name", protRef1, protRef3);
+		assertNotEquals(protRef1, protRef3, "A new protein is added with a new name");
 	}
-	
-//	@Test
-//	public void addCellularLocationVocabularyTest() {
-//		
-//		BioPAXModel model = new BioPAXModel();
-//		
-//		// Underlying PAXTools model
-//		Model innerModel = model.getPaxtoolsModel();
-//		
-//		String commonLocationName = "location1";
-//		String uniqueLocationName = "location2";
-//		
-//		CellularLocationVocabulary clv1 = model.getOrCreateCellularLocationVocabulary(commonLocationName);
-//		assertTrue("Cellular location vocabulary is added to the model", innerModel.contains(clv1));
-//		assertEquals("Cellular location vocabulary has the name", 1, clv1.getTerm().size());
-//		
-//		CellularLocationVocabulary clv2 = model.getOrCreateCellularLocationVocabulary(commonLocationName);
-//		assertEquals("No duplication in adding the second cellular location with the same name", clv1, clv2);
-//		
-//		CellularLocationVocabulary clv3 = model.getOrCreateCellularLocationVocabulary(uniqueLocationName);
-//		assertNotEquals("A new cellular location is added with a new name", clv1, clv3);
-//	}
 	
 	@Test
 	public void addConversionTest() {
@@ -120,10 +98,10 @@ public class BioPAXModelTest {
 		Protein right = model.addNew(Protein.class);
 		
 		Conversion conversion = model.addNewConversion(Conversion.class, left, right, dir);
-		assertTrue("Conversion is added to the model", innerModel.contains(conversion));
-		assertTrue("Coversions left side is set", conversion.getLeft().contains(left));
-		assertTrue("Coversions right side is set", conversion.getRight().contains(right));
-		assertEquals("Conversion direction is set", dir, conversion.getConversionDirection());
+		assertTrue(innerModel.contains(conversion), "Conversion is added to the model");
+		assertTrue(conversion.getLeft().contains(left), "Coversions left side is set");
+		assertTrue(conversion.getRight().contains(right), "Coversions right side is set");
+		assertEquals(dir, conversion.getConversionDirection(), "Conversion direction is set");
 	}
 	
 	@Test
@@ -142,10 +120,10 @@ public class BioPAXModelTest {
 		
 		Control control = model.addNewControl(Control.class, controller, controlled, controlType);
 		
-		assertTrue("Control is added to the model", innerModel.contains(control));
-		assertTrue("Controller is set", control.getController().contains(controller));
-		assertTrue("Controlled is set", control.getControlled().contains(controlled));
-		assertEquals("Control type is set", controlType, control.getControlType());
+		assertTrue(innerModel.contains(control), "Control is added to the model");
+		assertTrue(control.getController().contains(controller), "Controller is set");
+		assertTrue(control.getControlled().contains(controlled), "Controlled is set");
+		assertEquals(controlType, control.getControlType(), "Control type is set");
 	}
 
 }

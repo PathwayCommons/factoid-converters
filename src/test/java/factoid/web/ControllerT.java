@@ -1,7 +1,7 @@
 package factoid.web;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -9,18 +9,16 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @Import(Application.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ControllerT {
@@ -36,7 +34,7 @@ public class ControllerT {
     HttpEntity<String> request = new HttpEntity<>(data, headers);
     String res = template.postForObject("/v2/json-to-biopax", request, String.class);
     assertNotNull(res);
-    assertThat(res, containsString("biopax-level3.owl#"));
+    assertTrue(res.contains("biopax-level3.owl#"));
   }
 
   @Test
@@ -47,7 +45,7 @@ public class ControllerT {
     HttpEntity<String> request = new HttpEntity<>(data, headers);
     String res = template.postForObject("/v2/json-to-sbgn", request, String.class);
     assertNotNull(res);
-    assertThat(res, containsString("http://sbgn.org/libsbgn/"));
+    assertTrue(res.contains("http://sbgn.org/libsbgn/"));
   }
 
   @Test
@@ -58,7 +56,7 @@ public class ControllerT {
     HttpEntity<String> request = new HttpEntity<>(data, headers);
     String res = template.postForObject("/v2/biopax-to-sbgn", request, String.class);
     assertNotNull(res);
-    assertThat(res, containsString("http://sbgn.org/libsbgn/"));
+    assertTrue(res.contains("http://sbgn.org/libsbgn/"));
   }
   
   @Test
@@ -68,8 +66,10 @@ public class ControllerT {
     headers.set("Content-Type", "application/vnd.biopax.rdf+xml");
     HttpEntity<String> request = new HttpEntity<>(data, headers);
     String res = template.postForObject("/v2/biopax-to-json", request, String.class);
-    assertNotNull(res);
-    assertThat(res, containsString("interaction"));
+    assertAll(
+      () -> assertNotNull(res),
+      () -> assertTrue(res.contains("interaction"))
+    );
   }
   
   @Test
@@ -80,7 +80,6 @@ public class ControllerT {
     HttpEntity<String> request = new HttpEntity<>(url, headers);
     String res = template.postForObject("/v2/biopax-url-to-json", request, String.class);
     assertNotNull(res);
-    // this line works fine with unit tests but weirdly blocking the build so commented it out for now.
-//    assertThat(res, containsString("interaction"));
+    assertTrue(res.contains("interaction"));
   }
 }

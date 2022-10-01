@@ -1,7 +1,0 @@
-sudo: false
-script: ./gradlew build
-jdk:
-    - openjdk8
-    - openjdk11
-notifications:
-    slack: pathwaycommons:EDRQfFuGFr8Xn93M5xNMPVRB

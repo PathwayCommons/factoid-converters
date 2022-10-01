@@ -13,7 +13,7 @@ import org.biopax.paxtools.io.SimpleIOHandler;
 import org.biopax.paxtools.model.*;
 import org.biopax.paxtools.model.level3.*;
 import org.biopax.paxtools.model.level3.Process;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileReader;

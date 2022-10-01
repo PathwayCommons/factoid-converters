@@ -32,10 +32,6 @@ import org.biopax.paxtools.model.level3.Process;
 import org.biopax.paxtools.model.level3.ProteinReference;
 import org.biopax.paxtools.model.level3.SimplePhysicalEntity;
 import org.biopax.paxtools.model.level3.TemplateReactionRegulation;
-import org.biopax.paxtools.model.level3.Xref;
-
-import com.google.common.io.Resources;
-import com.sun.xml.bind.v2.model.core.Element;
 
 public class Simplify {
 	public static void main(String[] args) throws FileNotFoundException {
