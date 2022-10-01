@@ -2,8 +2,7 @@
 
 A java web server to convert [factoid](https://github.com/PathwayCommons/factoid/) documents to BioPAX and SBGN models. 
 
-[![Build Status](https://travis-ci.org/PathwayCommons/factoid-converters.svg?branch=master)](https://travis-ci.org/PathwayCommons/factoid-converters) 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/eba0e725f1bd4d45b4c15b45b8c13488)](https://www.codacy.com/app/IgorRodchenkov/factoid-converters?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=PathwayCommons/factoid-converters&amp;utm_campaign=Badge_Grade)
+![Build](https://github.com/PathwayCommons/factoid-converters/actions/workflows/Build.yml/badge.svg?branch=master)
 
 ## Build
 
