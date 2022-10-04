@@ -1,0 +1,17 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-Application<factoid-converters>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "factoid.web.Application",
+      "projectName": "factoid-converters",
+      "args": "",
+      "env": {
+        "SERVER_PORT": "8081"
+      },
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}

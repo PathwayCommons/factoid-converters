@@ -215,6 +215,7 @@ public class BioPAXModel {
 		}
 		
 		T entityRef = null;
+		// THis is where Xref is instantiated as RelationshipXref
 		RelationshipXref xref = getOrCreateEntityXref(xrefModel);
 		BioSource organism = null;
 		
@@ -507,6 +508,7 @@ public class BioPAXModel {
 		if (entityRef != null) {
 			assertSimplePhysicalEntityOrSubclass(c);
 			
+			// This is where entity ref is set.
 			((SimplePhysicalEntity) entity).setEntityReference(entityRef);
 		}
 		else {
