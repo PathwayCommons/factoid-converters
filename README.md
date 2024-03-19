@@ -20,7 +20,7 @@ java -jar build/libs/factoid-converters*.jar --server.port=8080
 RESTful API (Swagger docs):
 
 Once the app is built and running, 
-the auto-generated documentation is available at 
+the auto-generated OpenAPI/Swagger documentation is available at (ending with '/')
 `http://localhost:8080/convert/`
 
 ## Docker
@@ -33,7 +33,7 @@ docker run -it --rm --name factoid-converters -p <PORT>:8080 pathwaycommons/fact
 ```
 
 Optionally, a member of 'pathwaycommons' group can now push (upload) the latest Docker image there:
-
+(BTW: the latest Docker image is built automatically by Dockerhub on every git push to the master branch)
 ```commandline
 docker login
 docker push pathwaycommons/factoid-converters

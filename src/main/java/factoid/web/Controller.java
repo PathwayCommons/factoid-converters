@@ -5,8 +5,8 @@ import com.google.gson.JsonSyntaxException;
 
 import factoid.converter.BiopaxToFactoid;
 import factoid.converter.FactoidToBiopax;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.biopax.paxtools.io.SimpleIOHandler;
 import org.biopax.paxtools.io.sbgn.L3ToSBGNPDConverter;
 import org.biopax.paxtools.model.Model;
@@ -31,13 +31,13 @@ import java.util.zip.GZIPInputStream;
 @RequestMapping(value = "/v2", method = {RequestMethod.POST})
 public class Controller {
 
-  @ApiOperation(value = "json-to-biopax", notes = "Converts a Factoid model to BioPAX.")
+  @Operation(summary = "json-to-biopax", description = "Converts a Factoid model to BioPAX.")
   @RequestMapping(path = "/json-to-biopax",
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/vnd.biopax.rdf+xml"
   )
   public String jsonToBiopax(
-    @ApiParam("Factoid document content (JSON string)") @RequestBody String body) {
+    @Parameter(description = "Factoid document content (JSON string)") @RequestBody String body) {
     // Add templates to converter by the reader
     FactoidToBiopax converter = new FactoidToBiopax();
     try {
@@ -52,13 +52,13 @@ public class Controller {
     return converter.convertToBiopax();
   }
 
-  @ApiOperation(value = "json-to-sbgn", notes = "Converts a Factoid model to SBGN-ML (via BioPAX).")
+  @Operation(summary = "json-to-sbgn", description = "Converts a Factoid model to SBGN-ML (via BioPAX).")
   @RequestMapping(path = "/json-to-sbgn",
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/xml"
   )
   public String jsonToSbgn(
-    @ApiParam("Factoid document (JSON string)") @RequestBody String body) {
+    @Parameter(description = "Factoid document (JSON string)") @RequestBody String body) {
     try {
       InputStream is = new ByteArrayInputStream(jsonToBiopax(body).getBytes(StandardCharsets.UTF_8));
       Model model = new SimpleIOHandler().convertFromOWL(is);
@@ -73,13 +73,13 @@ public class Controller {
     }
   }
 
-  @ApiOperation(value = "biopax-to-sbgn", notes = "Converts a factoid BioPAX model to SBGN-ML (SBGN PD).")
+  @Operation(summary = "biopax-to-sbgn", description = "Converts a factoid BioPAX model to SBGN-ML (SBGN PD).")
   @RequestMapping(path = "/biopax-to-sbgn",
     consumes = "application/vnd.biopax.rdf+xml",
     produces = "application/xml"
   )
   public String biopaxToSbgn(
-    @ApiParam("A factoid (small) BioPAX RDF/XML model") @RequestBody String body) {
+    @Parameter(description = "A factoid (small) BioPAX RDF/XML model") @RequestBody String body) {
     try {
       InputStream is = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
       Model model = new SimpleIOHandler().convertFromOWL(is);
@@ -94,13 +94,13 @@ public class Controller {
     }
   }
 
-  @ApiOperation(value = "biopax-to-json", notes = "Converts a BioPAX model to Factoid JSON.")
+  @Operation(summary = "biopax-to-json", description = "Converts a BioPAX model to Factoid JSON.")
   @RequestMapping(path = "/biopax-to-json",
     consumes = "application/vnd.biopax.rdf+xml",
     produces = "application/json"
   )
   public String biopaxToFactoid(
-		  @ApiParam("A BioPAX RDF/XML model") @RequestBody String body) {
+		  @Parameter(description = "A BioPAX RDF/XML model") @RequestBody String body) {
 	  BiopaxToFactoid converter = new BiopaxToFactoid();
 	  try {
 		  InputStream is = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
@@ -113,13 +113,13 @@ public class Controller {
 	  }
   }
   
-  @ApiOperation(value = "biopax-url-to-json", notes = "Converts a BioPAX model to Factoid JSON.")
+  @Operation(summary = "biopax-url-to-json", description = "Converts a BioPAX model to Factoid JSON.")
   @RequestMapping(path = "/biopax-url-to-json",
     consumes = "text/plain",
     produces = "application/json"
   )
   public String biopaxUrlToFactoid(
-		  @ApiParam("URL of a TAR-GZ compressed BioPAX RDF/XML file") @RequestBody String url) {
+		  @Parameter(description = "URL of a TAR-GZ compressed BioPAX RDF/XML file") @RequestBody String url) {
 	  BiopaxToFactoid converter = new BiopaxToFactoid();
 	  try {
 		  String body = getContentFromUrl(url);
