@@ -16,8 +16,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-#    env:
-#      _JAVA_OPTIONS: "--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
+    env:
+      JDK_JAVA_OPTIONS: "--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
 
     name: Build with Gradle
     
@@ -29,7 +29,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: 17
+          java-version: 20
           distribution: 'temurin'
           cache: gradle
       - name: Build with Gradle

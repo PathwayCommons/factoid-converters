@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.5.0'
+        springBootVersion = '2.7.15'
     }
     repositories {
         maven {
@@ -32,7 +32,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     runtimeOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    implementation 'org.biopax.paxtools:sbgn-converter:5.3.0-SNAPSHOT'
+    implementation 'org.biopax.paxtools:sbgn-converter:5.3.0'
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'org.apache.commons:commons-collections4:4.4'
     implementation 'io.springfox:springfox-swagger2:2.7.0'
