@@ -45,8 +45,8 @@ public class Controller {
       converter.addToModel(body);
     } catch (IllegalStateException | JsonSyntaxException | JsonIOException e) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-    } catch (Exception e) {
-      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString());
+    } catch (Throwable e) {
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "json-to-biopax failed", e);
     }
 
     // Convert the model to biopax string
@@ -69,8 +69,8 @@ public class Controller {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       converter.writeSBGN(model, baos);
       return baos.toString(StandardCharsets.UTF_8.name());
-    } catch (Exception e) {
-      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString());
+    } catch (Throwable e) {
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "json-to-sbgn failed", e);
     }
   }
 
@@ -90,8 +90,8 @@ public class Controller {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       converter.writeSBGN(model, baos);
       return baos.toString(StandardCharsets.UTF_8.name());
-    } catch (Exception e) {
-      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString());
+    } catch (Throwable e) {
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "biopax-to-sbgn failed", e);
     }
   }
 
@@ -109,8 +109,8 @@ public class Controller {
 		  return converter.convert(model).toString();
 	  } catch (IllegalStateException | JsonSyntaxException | JsonIOException e) {
 		  throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-	  } catch (Exception e) {
-		  throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString());
+	  } catch (Throwable e) {
+		  throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "biopax-to-json failed", e);
 	  }
   }
   
@@ -129,8 +129,8 @@ public class Controller {
 		  return converter.convert(model).toString();
 	  } catch (IllegalStateException | JsonSyntaxException | JsonIOException e) {
 		  throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-	  } catch (Exception e) {
-		  throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString());
+	  } catch (Throwable e) {
+		  throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "biopax-url-to-json failed", e);
 	  }
   }
   
@@ -156,7 +156,7 @@ public class Controller {
 			e.printStackTrace();
 		}
 	    
-	    String body = writer.toString();
-	    return body;
+	  String body = writer.toString();
+	  return body;
 	}
 }

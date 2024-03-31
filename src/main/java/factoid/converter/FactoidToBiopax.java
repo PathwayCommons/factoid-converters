@@ -31,6 +31,8 @@ import factoid.model.*;
 
 public class FactoidToBiopax {
 
+	//todo: it's a work-in-progress; currently cannot do a round-trip data conversion, e.g. biopax->(biofactoid)json->biopax...
+
   private static final Map<String, ControlType> CONTROL_TYPE_MAP = createControlTypeMap();
 	
 	private TemplateModel model;
@@ -59,11 +61,14 @@ public class FactoidToBiopax {
    * @param docTemplate
    */
 	public void addToModel(JsonObject docTemplate) {
-		
+		// quick checks if we can handle this json data
+		if(!docTemplate.has("interactions") || !docTemplate.get("interactions").isJsonArray()) {
+			throw new AssertionError("Unsupported json shcema (expected 'interactions' array)");
+		}
+
 		JsonArray intnTemplates = docTemplate.get("interactions").getAsJsonArray();
-	
+
 		Iterator<JsonElement> it = intnTemplates.iterator();
-		
 		while (it.hasNext()) {
 			JsonObject template = (JsonObject) it.next();
 			String typeStr = template.get("type").getAsString();
