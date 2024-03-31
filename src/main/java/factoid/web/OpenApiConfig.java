@@ -18,9 +18,8 @@ public class OpenApiConfig {
 
   private Info apiInfo() {
     return new Info()
-      .title("Factoid data converters")
-      .description("A RESTful web service, built with Spring Boot and Paxtools java libraries, that converts " +
-          "Factoid documents to BioPAX or SBGN formats.")
+      .title("Pathway Commons Biofactoid/BioPAX data converters")
+      .description("An experimental/research RESTful web service to convert Biofactoid documents to BioPAX or SBGN formats.")
       .version("2")
       .contact(apiContact())
       .license(apiLicence());

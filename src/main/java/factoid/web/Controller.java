@@ -13,6 +13,7 @@ import org.biopax.paxtools.model.Model;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -43,9 +44,9 @@ public class Controller {
     try {
       converter.addToModel(body);
     } catch (IllegalStateException | JsonSyntaxException | JsonIOException e) {
-      throw new ConverterException(HttpStatus.BAD_REQUEST, e.getMessage());
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     } catch (Exception e) {
-      throw new ConverterException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString());
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString());
     }
 
     // Convert the model to biopax string
@@ -69,7 +70,7 @@ public class Controller {
       converter.writeSBGN(model, baos);
       return baos.toString(StandardCharsets.UTF_8.name());
     } catch (Exception e) {
-      throw new ConverterException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString());
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString());
     }
   }
 
@@ -90,7 +91,7 @@ public class Controller {
       converter.writeSBGN(model, baos);
       return baos.toString(StandardCharsets.UTF_8.name());
     } catch (Exception e) {
-      throw new ConverterException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString());
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString());
     }
   }
 
@@ -107,9 +108,9 @@ public class Controller {
       Model model = new SimpleIOHandler().convertFromOWL(is);
 		  return converter.convert(model).toString();
 	  } catch (IllegalStateException | JsonSyntaxException | JsonIOException e) {
-		  throw new ConverterException(HttpStatus.BAD_REQUEST, e.getMessage());
+		  throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
 	  } catch (Exception e) {
-		  throw new ConverterException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString());
+		  throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString());
 	  }
   }
   
@@ -127,9 +128,9 @@ public class Controller {
 	      Model model = new SimpleIOHandler().convertFromOWL(is);
 		  return converter.convert(model).toString();
 	  } catch (IllegalStateException | JsonSyntaxException | JsonIOException e) {
-		  throw new ConverterException(HttpStatus.BAD_REQUEST, e.getMessage());
+		  throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
 	  } catch (Exception e) {
-		  throw new ConverterException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString());
+		  throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.toString());
 	  }
   }
   

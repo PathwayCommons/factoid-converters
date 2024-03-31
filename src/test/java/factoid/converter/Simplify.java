@@ -128,7 +128,7 @@ public class Simplify {
 		}
 		
 		Cloner cln = new Cloner(SimpleEditorMap.L3, BioPAXLevel.L3.getDefaultFactory());
-		Model excisedModel = cln.clone(model, els);
+		Model excisedModel = cln.clone(els);
 		System.out.println(excisedModel.getObjects().size());
 		String owl = SimpleIOHandler.convertToOwl(excisedModel);
 		

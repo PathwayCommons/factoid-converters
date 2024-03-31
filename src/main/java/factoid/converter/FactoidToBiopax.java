@@ -56,7 +56,7 @@ public class FactoidToBiopax {
   /**
    * Processes the input JSON templates,
    * creates BioPAX objects and adds to the BioPAX model.
-   * @param templates
+   * @param docTemplate
    */
 	public void addToModel(JsonObject docTemplate) {
 		

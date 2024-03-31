@@ -33,7 +33,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-configuration-processor"
     implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
 
-    implementation 'org.biopax.paxtools:sbgn-converter:5.3.0'
+    implementation 'org.biopax.paxtools:sbgn-converter:6.0.0-SNAPSHOT'
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'org.apache.commons:commons-collections4:4.4'
 
@@ -49,4 +49,4 @@ dependencies {
 
 sourceCompatibility = 8
 group = 'pathwaycommons'
-version =  '0.4.1'
+version =  '0.4.2'
