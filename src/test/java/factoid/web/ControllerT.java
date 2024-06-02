@@ -1,5 +1,6 @@
 package factoid.web;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -70,7 +71,7 @@ public class ControllerT {
   }
   
   @Test
-  public void testBiopaxUrlToFactoid() {
+  public void testBiopaxArchiveUrlToFactoid() {
     String url = "https://www.pathwaycommons.org/archives/PC2/v12/PathwayCommons12.psp.BIOPAX.owl.gz";
     HttpHeaders headers = new HttpHeaders();
     headers.set("Content-Type", "text/plain");
@@ -78,5 +79,15 @@ public class ControllerT {
     String res = template.postForObject("/v2/biopax-url-to-json", request, String.class);
     assertNotNull(res);
     assertTrue(res.contains("interaction"));
+  }
+
+  @Test
+  @Disabled
+  public void testPc2UrlToFactoid() {
+    String url = "https://beta.pathwaycommons.org/pc2/get?uri=biofactoid:74ea0716-473c-4a6c-96e0-113a33112827";
+    HttpHeaders headers = new HttpHeaders();
+    HttpEntity<String> request = new HttpEntity<>(url, headers);
+    String res = template.postForObject("/v2/biopax-url-to-json", request, String.class);
+    assertNotNull(res);
   }
 }

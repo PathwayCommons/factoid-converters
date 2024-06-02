@@ -32,8 +32,8 @@ public class BiopaxToFactoidTest {
 		Set<Map.Entry<String, JsonElement>> entries = js.entrySet();
 		
 		for ( Map.Entry<String, JsonElement> entry : entries ) {
-			Set<String> entityIds1 = new HashSet<String>();
-			Set<String> entityIds2 = new HashSet<String>();
+			Set<String> entityIds1 = new HashSet<>();
+			Set<String> entityIds2 = new HashSet<>();
 			JsonArray arr = entry.getValue().getAsJsonArray();
 			for ( JsonElement el : arr ) {
 				JsonObject obj = el.getAsJsonObject();
@@ -49,7 +49,6 @@ public class BiopaxToFactoidTest {
 			
 			assertEquals(entityIds1, entityIds2);
 		}
-		
-		
+
 	}
 }

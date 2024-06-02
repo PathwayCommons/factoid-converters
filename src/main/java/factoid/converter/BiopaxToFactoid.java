@@ -2,14 +2,12 @@ package factoid.converter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.biopax.paxtools.model.Model;
 import org.biopax.paxtools.model.level3.BioSource;
@@ -28,13 +26,11 @@ import org.biopax.paxtools.model.level3.Evidence;
 import org.biopax.paxtools.model.level3.EvidenceCodeVocabulary;
 import org.biopax.paxtools.model.level3.Interaction;
 import org.biopax.paxtools.model.level3.ModificationFeature;
-import org.biopax.paxtools.model.level3.MolecularInteraction;
 import org.biopax.paxtools.model.level3.PhysicalEntity;
 import org.biopax.paxtools.model.level3.Process;
 import org.biopax.paxtools.model.level3.Protein;
 import org.biopax.paxtools.model.level3.ProteinReference;
 import org.biopax.paxtools.model.level3.Rna;
-import org.biopax.paxtools.model.level3.SequenceEntity;
 import org.biopax.paxtools.model.level3.SimplePhysicalEntity;
 import org.biopax.paxtools.model.level3.SmallMolecule;
 import org.biopax.paxtools.model.level3.TemplateReaction;
@@ -42,7 +38,6 @@ import org.biopax.paxtools.model.level3.TemplateReactionRegulation;
 import org.biopax.paxtools.model.level3.Xref;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
 
@@ -64,7 +59,7 @@ public class BiopaxToFactoid {
 				.collect(Collectors.toSet());
 
 		for (Interaction intn : intns) {
-			Set<String> markedPmids = new HashSet<String>();
+			Set<String> markedPmids = new HashSet<>();
 			Process controlled = getControlled(intn);
 			for ( Evidence evidence : controlled.getEvidence() ) {
 				for (Xref xref : evidence.getXref()) {
@@ -153,7 +148,6 @@ public class BiopaxToFactoid {
 				}
 			}
 		}
-		
 		return false;
 	}
 	
@@ -225,11 +219,11 @@ public class BiopaxToFactoid {
 		
 		if ( originalDb.contains("uniprot") ) {
 			db = "uniprot";
-		}
-		else if ( originalDb.equals("hgnc symbol") || originalDb.equals("refseq") ) {
+		} else if (  originalDb.equalsIgnoreCase("hgnc.symbol")
+				|| originalDb.equalsIgnoreCase("hgnc symbol")
+				|| originalDb.equalsIgnoreCase("refseq") ) {
 			db = originalDb;
-		}
-		else {
+		} else {
 			logger.warning("Unhandled xref database: " + originalDb);
 			// if the entity db is not handled return null
 			// which will signal that the related interaction must be skipped as well

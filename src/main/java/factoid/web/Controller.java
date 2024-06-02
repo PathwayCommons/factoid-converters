@@ -15,14 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
@@ -120,12 +113,12 @@ public class Controller {
     produces = "application/json"
   )
   public String biopaxUrlToFactoid(
-		  @Parameter(description = "URL of a TAR-GZ compressed BioPAX RDF/XML file") @RequestBody String url) {
+		  @Parameter(description = "URL of a BioPAX RDF/XML file") @RequestBody String url) {
 	  BiopaxToFactoid converter = new BiopaxToFactoid();
 	  try {
 		  String body = getContentFromUrl(url);
 		  InputStream is = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
-	      Model model = new SimpleIOHandler().convertFromOWL(is);
+      Model model = new SimpleIOHandler().convertFromOWL(is);
 		  return converter.convert(model).toString();
 	  } catch (IllegalStateException | JsonSyntaxException | JsonIOException e) {
 		  throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -136,26 +129,26 @@ public class Controller {
   
   private String getContentFromUrl(String url) {
 		InputStream is = null;
-		GZIPInputStream gzipInputStream = null;
 		try {
-			is = new URL(url).openStream();
-			gzipInputStream = new GZIPInputStream(is);
+      try {
+			  is = new GZIPInputStream(new URL(url).openStream());
+      } catch (IOException e) {
+        //e.printStackTrace();
+        is = new URL(url).openStream();
+      }
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		InputStreamReader reader = new InputStreamReader(gzipInputStream);
-		BufferedReader in = new BufferedReader(reader);
+    Reader reader = new InputStreamReader(is);
 		Writer writer = new StringWriter();
-
 		char[] buffer = new char[10240];
 	    try {
-			for (int length = 0; (length = reader.read(buffer)) > 0;) {
+			for (int length; (length = reader.read(buffer)) > 0;) {
 			    writer.write(buffer, 0, length);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	    
 	  String body = writer.toString();
 	  return body;
 	}
