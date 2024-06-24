@@ -1,6 +1,6 @@
 # factoid-converters
 
-A java web server to convert [factoid](https://github.com/PathwayCommons/factoid/) documents to BioPAX and SBGN models. 
+A java web server to convert [biofactoid](https://github.com/PathwayCommons/factoid/) documents to BioPAX and SBGN models. 
 
 [![Build](https://github.com/PathwayCommons/factoid-converters/actions/workflows/Build.yml/badge.svg)](https://github.com/PathwayCommons/factoid-converters/actions/workflows/Build.yml)
 
